@@ -3,3 +3,4 @@ export.transport.ftp.option.directory,Verzeichnis (optional),Directory (optional
 export.transport.ftp.option.login,Login,Login,,
 export.transport.ftp.option.password,Passwort,Password,,
 export.transport.ftp.option.server,Server,Server,,
+export.transport.ftp.name,FTP,FTP,,

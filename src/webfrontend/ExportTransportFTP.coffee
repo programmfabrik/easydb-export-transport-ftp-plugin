@@ -2,6 +2,9 @@ class ExportTransportFTP extends ExportTransportPlugin
 	getType: ->
 		"ftp"
 
+	getDisplayType: ->
+		$$("export.transport.ftp.name")
+
 	getOptions: ->
 		fields = []
 
