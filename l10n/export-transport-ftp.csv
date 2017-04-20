@@ -3,4 +3,5 @@ export.transport.ftp.option.directory,Verzeichnis (optional),Directory (optional
 export.transport.ftp.option.login,Login,Login,,
 export.transport.ftp.option.password,Passwort,Password,,
 export.transport.ftp.option.server,Server,Server,,
-export.transport.ftp.name,FTP,FTP,,
+export.transport.ftp.type|text,FTP,FTP,,
+export.transport.ftp.type|icon,fa-caret-square-o-right ,fa-caret-square-o-right ,,

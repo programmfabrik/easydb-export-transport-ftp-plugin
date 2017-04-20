@@ -3,7 +3,13 @@ class ExportTransportFTP extends ExportTransportPlugin
 		"ftp"
 
 	getDisplayType: ->
-		$$("export.transport.ftp.name")
+		$$("export.transport.ftp.type|text")
+
+	getDisplayIcon: ->
+		ez5.loca.str_default("export.transport.ftp.type|icon")
+
+	isAllowed: ->
+		true
 
 	getOptions: ->
 		fields = []
