@@ -1,0 +1,12 @@
+plugin:
+  name: easydb-export-transport-ftp
+  version: 1.0
+  server:
+    api-version:
+      require: 1
+  webfrontend:
+    url: export-transport-ftp.js
+    l10n: l10n/
+
+python-2:
+  file: src/server/export-transport-ftp.py
