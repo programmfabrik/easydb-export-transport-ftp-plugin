@@ -1,4 +1,4 @@
-PLUGIN_NAME = export-transport-ftp
+PLUGIN_NAME = easydb-export-transport-ftp
 
 L10N_FILES = l10n/$(PLUGIN_NAME).csv
 L10N_GOOGLE_KEY = 1Z3UPJ6XqLBp-P8SUf-ewq4osNJ3iZWKJB83tc6Wrfn0
@@ -11,8 +11,8 @@ INSTALL_FILES = \
 	$(WEB)/l10n/es-ES.json \
 	$(WEB)/l10n/it-IT.json \
 	$(JS) \
-	src/server/export-transport-ftp.py \
-	export-transport-ftp.yml
+	src/server/$(PLUGIN_NAME).py \
+	$(PLUGIN_NAME).yml
 
 COFFEE_FILES = src/webfrontend/ExportTransportFTP.coffee
 

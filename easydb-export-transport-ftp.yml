@@ -5,8 +5,8 @@ plugin:
     api-version:
       require: 1
   webfrontend:
-    url: export-transport-ftp.js
+    url: easydb-export-transport-ftp.js
     l10n: l10n/
 
 python-2:
-  file: src/server/export-transport-ftp.py
+  file: src/server/easydb-export-transport-ftp.py
