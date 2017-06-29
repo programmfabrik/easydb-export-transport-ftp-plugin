@@ -11,6 +11,12 @@ class ExportTransportFTP extends ExportTransportPlugin
 	isAllowed: ->
 		true
 
+	getOptionsDisplay: (data) ->
+		if data.options.server
+			[ data.options.server ]
+		else
+			return
+
 	getOptions: ->
 		fields = []
 
@@ -27,6 +33,14 @@ class ExportTransportFTP extends ExportTransportPlugin
 				undo_and_changed_support: false
 
 		fields
+
+	getSaveData: (data) ->
+		if not data.options?.server
+			throw new InvalidSaveDataException()
+		loc = CUI.parseLocation(data.options.server)
+		if not loc or not loc.hostname or not loc.protocol in ["ftp", "ftps"]
+			throw new InvalidSaveDataException()
+		return
 
 CUI.ready =>
 	TransportsEditor.registerPlugin(new ExportTransportFTP())
