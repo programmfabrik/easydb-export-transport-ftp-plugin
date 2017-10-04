@@ -27,7 +27,7 @@ class ExportTransportFTP extends ExportTransportPlugin
 			"password"
 		]
 			fields.push
-				type: Input
+				type: CUI.Input
 				name: opt
 				form: label: $$("export.transport.ftp.option."+opt)
 				undo_and_changed_support: false
