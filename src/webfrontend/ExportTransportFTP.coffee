@@ -24,17 +24,12 @@ class ExportTransportFTP extends ExportTransportPlugin
 			"server"
 			"directory"
 			"login"
+			"password"
 		]
 			fields.push
 				type: CUI.Input
 				name: opt
 				form: label: $$("export.transport.ftp.option."+opt)
-
-		fields.push
-			type: CUI.Input
-			name: "password"
-			input_type: "password"
-			form: label: $$("export.transport.ftp.option.password")
 
 		fields
 
