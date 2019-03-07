@@ -30,7 +30,6 @@ class ExportTransportFTP extends ExportTransportPlugin
 				type: CUI.Input
 				name: opt
 				form: label: $$("export.transport.ftp.option."+opt)
-				undo_and_changed_support: false
 
 		fields
 
@@ -38,7 +37,7 @@ class ExportTransportFTP extends ExportTransportPlugin
 		if not data.options?.server
 			throw new InvalidSaveDataException()
 		loc = CUI.parseLocation(data.options.server)
-		if not loc or not loc.hostname or not loc.protocol in ["ftp", "ftps"]
+		if not loc or not loc.hostname or not loc.protocol in ["ftp", "ftps", "sftp"]
 			throw new InvalidSaveDataException()
 		return
 
