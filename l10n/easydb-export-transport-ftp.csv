@@ -1,7 +1,9 @@
 key,de-DE,en-US,it-IT,es-ES
-export.transport.ftp.option.directory,Verzeichnis (optional),Directory (optional),,
+export.transport.ftp.option.directory,Verzeichnis,Directory,,
 export.transport.ftp.option.login,Login,Login,,
 export.transport.ftp.option.password,Passwort,Password,,
 export.transport.ftp.option.server,Server,Server,,
 export.transport.ftp.type|text,FTP,FTP,,
 export.transport.ftp.type|icon,fa-caret-square-o-right ,fa-caret-square-o-right ,,
+export.transport.ftp.option.hint.server,"​ftp://example.com, sftp://example.com, ftps://example.com","​ftp://example.com, ​sftp://example.com, ftps://example.com",,
+export.transport.ftp.option.hint.directory,Zum Beispiel: /data (optional),For example: /data (optional),,

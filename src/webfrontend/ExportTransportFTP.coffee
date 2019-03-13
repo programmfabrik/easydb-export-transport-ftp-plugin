@@ -21,15 +21,27 @@ class ExportTransportFTP extends ExportTransportPlugin
 		fields = []
 
 		for opt in [
-			"server"
-			"directory"
-			"login"
-			"password"
+			key: "server"
+			hint: true
+		,
+			key: "directory"
+			hint: true
+		,
+			key: "login"
+		,
+			key: "password"
 		]
+			formOpts =
+				label: $$("export.transport.ftp.option."+opt.key)
+
+			if opt.hint
+				formOpts.hint = $$("export.transport.ftp.option.hint."+opt.key)
+
 			fields.push
 				type: CUI.Input
-				name: opt
-				form: label: $$("export.transport.ftp.option."+opt)
+				name: opt.key
+				form: formOpts
+				maximize_horizontal: true
 
 		fields
 
