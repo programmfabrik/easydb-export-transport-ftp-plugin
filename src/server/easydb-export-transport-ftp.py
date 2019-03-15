@@ -29,8 +29,8 @@ def transport_ftp(easydb_context, protocol=None):
 
     server = opts.get('server')
 
-    if server.startswith('ftp://'):
-        FTP(easydb_context, opts, protocol).upload_files_from_export(exp)
+    if server.startswith('ftp://') or server.startswith('ftps://'):
+        FTP(easydb_context, opts, server.startswith('ftps://'), protocol).upload_files_from_export(exp)
 
     elif server.startswith('sftp://'):
         SFTP(easydb_context, opts, protocol).upload_files_from_export(exp)
@@ -104,12 +104,17 @@ class SFTP(object):
 
                 self.bytes_total = None
                 sftp.put(local_file, os.path.basename(filepath), callback=self.file_uploaded, confirm=True)
+
                 if self.bytes_total:
-                    self.logger.debug("put file '%s' as '%s' successfully (%s bytes)"
-                        % (local_file, os.path.join(destination, os.path.basename(local_file)), self.bytes_total))
+                    store_success_msg = "stored file '%s' as '%s' successfully on SFTP server %s (%s bytes)" % (
+                        local_file, os.path.join(destination, os.path.basename(local_file)), self.server, self.bytes_total)
+                else:
+                    store_success_msg = "stored file '%s' as '%s' successfully on SFTP server %s" % (
+                        local_file, os.path.join(destination, os.path.basename(local_file)), self.server)
+                self.logger.debug(store_success_msg)
 
                 if self.protocol:
-                    self.protocol.add_notice("stored %s on SFTP server %s" % (local_file, self.server))
+                    self.protocol.add_notice(store_success_msg)
 
                 if fo.get('eas_id'):
                     export_log_event(exp, fo)
@@ -117,9 +122,7 @@ class SFTP(object):
                 sftp.chdir(current_dir)
 
         except Exception as e:
-            _err_str = "SFTP error (%s): %s" % (
-                e.__class__.__name__,
-                e)
+            _err_str = "SFTP error (%s): %s" % (e.__class__.__name__, e)
             self.logger.warn(_err_str)
             if self.protocol:
                 self.protocol.add_warning(_err_str)
@@ -127,26 +130,28 @@ class SFTP(object):
 
 class FTP(object):
 
-    def __init__(self, easydb_context, opts, protocol=None):
-        self.logger = easydb_context.get_logger('transport.upload.ftp')
+    def __init__(self, easydb_context, opts, use_ftp_tls, protocol=None):
+        self.logger = easydb_context.get_logger('transport.upload.ftps') if use_ftp_tls else easydb_context.get_logger('transport.upload.ftp')
         self.protocol = protocol
-        self.server = opts.get('server')
+        self.server = opts.get('server').split('://')[-1]
         self.login = opts.get('login')
         self.password = opts.get('password')
         self.basedir = opts.get('directory', '')
+        self.use_ftp_tls = use_ftp_tls
+        self.server_protocol_str = 'FTPS' if use_ftp_tls else 'FTP'
 
 
     def upload_files_from_export(self, exp):
 
-        self.logger.debug("FTP server=%s login=%s" % (self.server, self.login))
+        self.logger.debug("%s server=%s login=%s" % (self.server_protocol_str, self.server, self.login))
 
         try:
-            ftp = ftplib.FTP(self.server, self.login, self.password)
+            if self.use_ftp_tls:
+                ftp = ftplib.FTP_TLS(host=self.server, user=self.login, passwd=self.password)
+            else:
+                ftp = ftplib.FTP(host=self.server, user=self.login, passwd=self.password)
 
-            #ftp.set_debuglevel(1)
-
-            # features = map(lambda x: x.strip(), ftp.sendcmd('FEAT').splitlines())
-            # has_utf8 = 'UTF8' in features
+            # ftp.set_debuglevel(1)
 
             self.logger.debug("basedir='%s'" % self.basedir)
 
@@ -155,7 +160,7 @@ class FTP(object):
                 current_dir = ftp.pwd()
                 rfn = fo['path']
                 dn = os.path.join(self.basedir, os.path.dirname(rfn)).rstrip(os.sep)
-                self.logger.debug("transport file '%s'" % dn)
+                self.logger.debug("put file '%s'" % rfn)
                 if dn:
                     for dnpart in dn.split(os.sep):
                         if not len(dnpart):
@@ -170,14 +175,15 @@ class FTP(object):
                             # ProFTPd: '550 S2@g_n_a_r_g: File exists'
                             if len(e.args) > 0:
                                 if not 'exists' in e.args[0]:
-                                    self.logger.warn('FTP error when trying to create directory: %s' % e.args[0])
+                                    self.logger.warn('%s error when trying to create directory: %s' % (self.server_protocol_str, e.args[0]))
                         ftp.cwd(dnpart)
 
                 ftp.storbinary("STOR %s" % os.path.basename(rfn), open(os.path.join(bp, rfn)))
-                self.logger.debug("stored %s on FTP server %s" % (rfn, self.server))
+                store_success_msg = "stored %s as %s on %s server %s" % (rfn, os.path.join(dn, os.path.basename(rfn)), self.server_protocol_str, self.server)
+                self.logger.debug(store_success_msg)
 
                 if self.protocol:
-                    self.protocol.add_notice("stored %s on FTP server %s" % (rfn, self.server))
+                    self.protocol.add_notice(store_success_msg)
 
                 if fo.get('eas_id'):
                     export_log_event(exp, fo)
@@ -185,10 +191,7 @@ class FTP(object):
                 ftp.cwd(current_dir)
 
         except ftplib.all_errors as e:
-            _err_str = "FTP error (%s.%s): %s" % (
-                e.__module__,
-                e.__class__.__name__,
-                e)
+            _err_str = "%s error (%s.%s): %s" % (self.server_protocol_str, e.__module__, e.__class__.__name__, e)
             self.logger.warn(_err_str)
             if self.protocol:
                 self.protocol.add_warning(_err_str)
