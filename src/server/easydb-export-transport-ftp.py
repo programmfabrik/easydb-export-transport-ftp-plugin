@@ -27,13 +27,18 @@ def transport_ftp(easydb_context, protocol=None):
         logger.warn("no ftp host found")
         return
 
+    archive_files = transport.get('archive_files', None)
+    use_files = []
+    if archive_files is not None:
+        use_files = archive_files
+
     server = opts.get('server')
 
     if server.startswith('ftp://') or server.startswith('ftps://'):
-        FTP(easydb_context, opts, server.startswith('ftps://'), protocol).upload_files_from_export(exp)
+        FTP(easydb_context, opts, server.startswith('ftps://'), protocol).upload_files_from_export(exp, use_files)
 
     elif server.startswith('sftp://'):
-        SFTP(easydb_context, opts, protocol).upload_files_from_export(exp)
+        SFTP(easydb_context, opts, protocol).upload_files_from_export(exp, use_files)
 
     else:
         logger.warn("unknown protocol for host '%s'" % server)
@@ -55,7 +60,7 @@ class SFTP(object):
         self.bytes_total = bytes_total
 
 
-    def upload_files_from_export(self, exp):
+    def upload_files_from_export(self, exp, use_files = []):
 
         self.logger.debug("SFTP server=%s login=%s" % (self.server, self.login))
 
@@ -67,17 +72,21 @@ class SFTP(object):
             sftp = paramiko.SFTPClient.from_transport(transport)
             self.logger.debug("successful connection to SFTP server")
 
-            for fo in exp.getFiles():
+            if len(use_files) < 1:
+                use_files = exp.getFiles()
+
+            for fo in use_files:
 
                 current_dir = sftp.getcwd()
                 filepath = fo['path']
+                target_path = fo['target'] if 'target' in fo else filepath
 
                 local_file = os.path.join(os.path.abspath(exp.getFilesPath()), filepath)
                 if not (os.path.exists(local_file) and os.path.isfile(local_file)):
                     self.logger.warn("export file '%s' does not exist -> skip" % local_file)
                     continue
 
-                destination = os.path.join(self.basedir, os.path.dirname(filepath)).rstrip(os.sep)
+                destination = os.path.join(self.basedir, os.path.dirname(target_path)).rstrip(os.sep)
                 if not destination:
                     self.logger.warn("could not determine destination for file '%s' -> skip" % local_file)
                     continue
@@ -103,7 +112,7 @@ class SFTP(object):
                     sftp.chdir(dnpart)
 
                 self.bytes_total = None
-                sftp.put(local_file, os.path.basename(filepath), callback=self.file_uploaded, confirm=True)
+                sftp.put(local_file, os.path.basename(target_path), callback=self.file_uploaded, confirm=True)
 
                 if self.bytes_total:
                     store_success_msg = "stored file '%s' as '%s' successfully on SFTP server %s (%s bytes)" % (
@@ -141,7 +150,7 @@ class FTP(object):
         self.server_protocol_str = 'FTPS' if use_ftp_tls else 'FTP'
 
 
-    def upload_files_from_export(self, exp):
+    def upload_files_from_export(self, exp, use_files = []):
 
         self.logger.debug("%s server=%s login=%s" % (self.server_protocol_str, self.server, self.login))
 
@@ -155,12 +164,17 @@ class FTP(object):
 
             self.logger.debug("basedir='%s'" % self.basedir)
 
-            bp = exp.getFilesPath()
-            for fo in exp.getFiles():
+            if len(use_files) < 1:
+                use_files = exp.getFiles()
+
+            for fo in use_files:
                 current_dir = ftp.pwd()
                 rfn = fo['path']
-                dn = os.path.join(self.basedir, os.path.dirname(rfn)).rstrip(os.sep)
-                self.logger.debug("put file '%s'" % rfn)
+                target_path = fo['target'] if 'target' in fo else rfn
+
+                dn = os.path.join(self.basedir, os.path.dirname(target_path)).rstrip(os.sep)
+                self.logger.debug("put file '%s'" % dn)
+
                 if dn:
                     for dnpart in dn.split(os.sep):
                         if not len(dnpart):
@@ -178,8 +192,8 @@ class FTP(object):
                                     self.logger.warn('%s error when trying to create directory: %s' % (self.server_protocol_str, e.args[0]))
                         ftp.cwd(dnpart)
 
-                ftp.storbinary("STOR %s" % os.path.basename(rfn), open(os.path.join(bp, rfn)))
-                store_success_msg = "stored %s as %s on %s server %s" % (rfn, os.path.join(dn, os.path.basename(rfn)), self.server_protocol_str, self.server)
+                ftp.storbinary("STOR %s" % os.path.basename(target_path), open(os.path.join(exp.getFilesPath(), rfn)))
+                store_success_msg = "stored '%s' as '%s' on %s server %s" % (rfn, os.path.join(dn, os.path.basename(target_path)), self.server_protocol_str, self.server)
                 self.logger.debug(store_success_msg)
 
                 if self.protocol:
