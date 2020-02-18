@@ -53,5 +53,8 @@ class ExportTransportFTP extends ExportTransportPlugin
 			throw new InvalidSaveDataException()
 		return
 
+	supportsPacker: ->
+		return true
+
 CUI.ready =>
 	TransportsEditor.registerPlugin(new ExportTransportFTP())
