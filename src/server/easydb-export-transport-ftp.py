@@ -37,9 +37,17 @@ def transport_ftp(easydb_context, protocol=None):
         logger.debug('transport files dir: {}'.format(files_dir))
 
         filelist = []
+        filetype_blacklist = ['.xsl', '.xslt']
         try:
             for dirpath, dirnames, filenames in os.walk(files_dir):
                 for f in filenames:
+                    skip = False
+                    for fe in filetype_blacklist:
+                        if f.endswith(fe):
+                            skip = True
+                            break
+                    if skip:
+                        continue
                     filelist.append({
                         'path': f
                     })
@@ -70,6 +78,8 @@ class SFTP(object):
         self.logger = easydb_context.get_logger('transport.upload.sftp')
         self.protocol = protocol
         self.server = opts.get('server').split('://')[-1]
+        while self.server.endswith('/'):
+            self.server = self.server[:-1]
         self.login = opts.get('login')
         self.password = opts.get('password')
         self.basedir = opts.get('directory', '')
@@ -156,6 +166,8 @@ class FTP(object):
         self.logger = easydb_context.get_logger('transport.upload.ftps') if use_ftp_tls else easydb_context.get_logger('transport.upload.ftp')
         self.protocol = protocol
         self.server = opts.get('server').split('://')[-1]
+        while self.server.endswith('/'):
+            self.server = self.server[:-1]
         self.login = opts.get('login')
         self.password = opts.get('password')
         self.basedir = opts.get('directory', '')
