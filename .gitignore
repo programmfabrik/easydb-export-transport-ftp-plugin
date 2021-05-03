@@ -6,3 +6,4 @@ build-stamp-*
 \#*\#
 commit.txt
 *.pyc
+files/
