@@ -119,7 +119,7 @@ def parse_ftp_url(url):
     elif scheme == 'ftp':
         port = 21
     elif scheme == 'ftps':
-        port = 990
+        port = 21
     elif scheme == 'sftp':
         port = 22
     else:

@@ -14,7 +14,7 @@ class util_parse_ftp_url(unittest.TestCase):
             ('ftp://schema.easydb.de:21', 'ftp', 'schema.easydb.de', 21),
             ('ftp://schema.easydb.de', 'ftp', 'schema.easydb.de', 21),
             ('ftps://schema.easydb.de:21', 'ftps', 'schema.easydb.de', 21),
-            ('ftps://schema.easydb.de', 'ftps', 'schema.easydb.de', 990),
+            ('ftps://schema.easydb.de', 'ftps', 'schema.easydb.de', 21),
             ('sftp://schema.easydb.de:21', 'sftp', 'schema.easydb.de', 21),
             ('sftp://schema.easydb.de', 'sftp', 'schema.easydb.de', 22),
             ('schema.easydb.de:21', 'ftp', 'schema.easydb.de', 21),
