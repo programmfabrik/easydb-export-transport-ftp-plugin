@@ -23,6 +23,19 @@ callbacks:
             type: body
           args:
             - type: value
-              value: src/server/easydb-export-transport-ftp-fylr.py
+              value: src/server/easydb-export-transport-fylr-ftp.py
+            - type: value
+              value: "%info.json%"
+
+  export_transport/transport_webdav:
+    exec:
+      service: python
+      commands:
+        - prog: python
+          stdout:
+            type: body
+          args:
+            - type: value
+              value: src/server/easydb-export-transport-fylr-webdav.py
             - type: value
               value: "%info.json%"

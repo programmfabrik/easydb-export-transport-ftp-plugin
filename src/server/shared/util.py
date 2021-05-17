@@ -13,7 +13,7 @@ def get_json_value(js, path, expected=False):
     for path_part in path_parts:
         if not isinstance(current, dict) or path_part not in current:
             if expected:
-                raise Exception('expected: {0}'.format(path_part))
+                return_error('internal', 'expected: {0}'.format(path_part))
             else:
                 return None
         current = current[path_part]
@@ -55,13 +55,13 @@ def create_missing_dirs_from_filepath(f_path):
     create_missing_dirs('/'.join(f_path.split('/')[:-1]))
 
 
-class RcloneException(Exception):
+class CommandlineErrorException(Exception):
 
     def __init__(self, msg_lines):
         self.msg_lines = msg_lines
 
     def __str__(self):
-        return 'rclone raised an error:\n' + '\n'.join(self.msg_lines)
+        return 'command line returned an error:\n' + '\n'.join(self.msg_lines)
 
 
 def check_stderr(stderr):
@@ -72,7 +72,7 @@ def check_stderr(stderr):
         if len(stderr[0]) < 1:
             return
 
-    raise RcloneException(stderr)
+    raise CommandlineErrorException(stderr)
 
 
 def stdout(line):
@@ -100,7 +100,7 @@ def return_error(realm, msg):
 def parse_ftp_url(url):
     url_parts = urlparse.urlparse(url)
 
-    # assume protcol ftp if not specified
+    # assume protocol ftp if not specified
     scheme = url_parts.scheme if url_parts.scheme != '' else 'ftp'
 
     # if hostname is empty (protocol was empty), assume path as hostname
@@ -128,5 +128,49 @@ def parse_ftp_url(url):
     return scheme, hostname, port
 
 
-def build_source_url(export_id, packer):
-    return 'export/{}/{}'.format(export_id, packer)
+def format_export_http_url(api_url, api_token, export_id, transport_packer=None):
+
+    path_for_packer = {
+        'zip': 'zip',
+        'tar.gz': 'tar_gz'
+    }
+
+    if transport_packer is None:
+        return '{0}/export/{1}/uuid/{2}/file/'.format(
+            api_url,
+            export_id,
+            api_token)
+
+    return '{0}/export/{1}/{2}/?token={3}&disposition=attachment'.format(
+        api_url,
+        export_id,
+        path_for_packer[transport_packer],
+        api_token)
+
+# --------------------- rclone specific functions --------------------
+
+
+def run_rclone_command(parameters, verbose=False):
+    # log level needs to be set to ERROR
+    # otherwise the NOTICE about the missing rclone config file would be written to stderr
+    # and the plugin would raise an exception even if the transport was successful
+    return run_command('rclone',
+                       parameters + ['--log-level=ERROR'],
+                       verbose)
+
+
+def add_rclone_parameters(parameter_map, additional_parameters=[]):
+    parameters = map(lambda p: '--{0}={1}'.format(p, parameter_map[p]),
+                     parameter_map)
+    parameters += map(lambda p: '--{0}'.format(p),
+                      additional_parameters)
+    return parameters
+
+
+def rclone_obscure_password(pw_cleartext):
+    stdout, stderr = run_rclone_command([
+        'obscure',
+        pw_cleartext
+    ])
+    check_stderr(stderr)
+    return stdout[0]

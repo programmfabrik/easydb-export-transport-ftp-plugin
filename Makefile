@@ -14,7 +14,8 @@ INSTALL_FILES = \
 	src/server/$(PLUGIN_NAME).py \
 	$(PLUGIN_NAME).yml
 
-COFFEE_FILES = src/webfrontend/ExportTransportFTP.coffee
+COFFEE_FILES = 	src/webfrontend/ExportTransportFTP.coffee \
+				src/webfrontend/ExportTransportWebDAV.coffee
 
 
 all: build
@@ -29,6 +30,8 @@ clean: clean-base
 
 wipe: wipe-base
 
+test:
+	python2 src/server/test.py
 
 # all:
 

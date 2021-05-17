@@ -1,12 +1,12 @@
-class ExportTransportFTP extends ExportTransportPlugin
+class ExportTransportWebDAV extends ExportTransportPlugin
 	getType: ->
-		"easydb-export-transport-ftp:transport_ftp"
+		"easydb-export-transport-ftp:transport_webdav"
 
 	getDisplayType: ->
-		$$("export.transport.ftp.type|text")
+		$$("export.transport.webdav.type|text")
 
 	getDisplayIcon: ->
-		ez5.loca.str_default("export.transport.ftp.type|icon")
+		ez5.loca.str_default("export.transport.webdav.type|icon")
 
 	isAllowed: ->
 		true
@@ -28,14 +28,16 @@ class ExportTransportFTP extends ExportTransportPlugin
 			hint: true
 		,
 			key: "login"
+			hint: true
 		,
 			key: "password"
+			hint: true
 		]
 			formOpts =
-				label: $$("export.transport.ftp.option."+opt.key)
+				label: $$("export.transport.webdav.option."+opt.key)
 
 			if opt.hint
-				formOpts.hint = $$("export.transport.ftp.option.hint."+opt.key)
+				formOpts.hint = $$("export.transport.webdav.option.hint."+opt.key)
 
 			fields.push
 				type: CUI.Input
@@ -44,7 +46,7 @@ class ExportTransportFTP extends ExportTransportPlugin
 				maximize_horizontal: true
 
 		formOpts =
-			label: $$("export.transport.ftp.option.packer")
+			label: $$("export.transport.webdav.option.packer")
 
 		fields.push
 			type: CUI.DataFieldProxy
@@ -74,7 +76,7 @@ class ExportTransportFTP extends ExportTransportPlugin
 		if not data.options?.server
 			throw new InvalidSaveDataException()
 		loc = CUI.parseLocation(data.options.server)
-		if not loc or not loc.hostname or not loc.protocol in ["ftp", "ftps", "sftp"]
+		if not loc or not loc.hostname or not loc.protocol in ["http", "https"]
 			throw new InvalidSaveDataException()
 		return
 
@@ -82,4 +84,4 @@ class ExportTransportFTP extends ExportTransportPlugin
 		return false
 
 CUI.ready =>
-	TransportsEditor.registerPlugin(new ExportTransportFTP())
+	TransportsEditor.registerPlugin(new ExportTransportWebDAV())
