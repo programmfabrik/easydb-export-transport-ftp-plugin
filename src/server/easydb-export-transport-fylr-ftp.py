@@ -161,4 +161,7 @@ if __name__ == '__main__':
 
     except util.CommandlineErrorException as e:
         print(str(e))
-        exit(1)
+        util.return_error('rclone_error', str(e))
+    except Exception as e:
+        print(str(e))
+        util.return_error('internal', str(e))
