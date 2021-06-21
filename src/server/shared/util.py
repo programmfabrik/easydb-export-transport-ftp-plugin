@@ -97,6 +97,10 @@ def return_error(realm, msg):
     }, indent=4))
 
 
+def return_json_body(msg):
+    stdout(json.dumps(msg, indent=4))
+
+
 def parse_ftp_url(url):
     url_parts = urlparse.urlparse(url)
 

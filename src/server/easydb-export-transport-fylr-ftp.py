@@ -26,7 +26,7 @@ def rclone_sync_to_ftp(parameter_map, rclone_ftp_method, ftp_dir, export_id, exp
         ftp_url
     ] + util.add_rclone_parameters(parameter_map, additional_parameters)
 
-    stdout, stderr = util.run_rclone_command(parameters, True)
+    stdout, stderr = util.run_rclone_command(parameters)
     util.check_stderr(stderr)
     return stdout
 
@@ -50,7 +50,7 @@ def rclone_copyurl_to_ftp(parameter_map, rclone_ftp_method, ftp_dir, export_id, 
         ftp_url
     ] + util.add_rclone_parameters(parameter_map, additional_parameters)
 
-    stdout, stderr = util.run_rclone_command(parameters, True)
+    stdout, stderr = util.run_rclone_command(parameters)
     util.check_stderr(stderr)
     return stdout
 
@@ -158,6 +158,8 @@ if __name__ == '__main__':
 
         else:
             raise Exception('unknown packer {}'.format(packer))
+
+        util.return_json_body(response)
 
     except util.CommandlineErrorException as e:
         print(str(e))
