@@ -1,6 +1,9 @@
 class ExportTransportFTP extends ExportTransportPlugin
 	getType: ->
-		"easydb-export-transport-ftp:transport_ftp"
+		if ez5.version("6")
+			"easydb-export-transport-ftp:transport_ftp"
+		else
+			return "ftp"
 
 	getDisplayType: ->
 		$$("export.transport.ftp.type|text")

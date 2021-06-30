@@ -84,4 +84,5 @@ class ExportTransportWebDAV extends ExportTransportPlugin
 		return false
 
 CUI.ready =>
-	TransportsEditor.registerPlugin(new ExportTransportWebDAV())
+	if ez5.version("6")
+		TransportsEditor.registerPlugin(new ExportTransportWebDAV())
