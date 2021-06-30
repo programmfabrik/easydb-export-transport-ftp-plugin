@@ -19,7 +19,7 @@ def rclone_sync_to_webdav(parameter_map, webdav_dir, export_id, export_name, api
             export_name)
     ] + util.add_rclone_parameters(parameter_map)
 
-    stdout, stderr = util.run_rclone_command(parameters, True)
+    stdout, stderr = util.run_rclone_command(parameters)
     util.check_stderr(stderr)
     return stdout
 
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         # depending on the packer, decide which rclone method to use
         if packer is None or packer == 'folder':
             # sync all exported files and folders from the export with the webdav target directory
-            rclone_response = rclone_sync_to_webdav(
+            _ = rclone_sync_to_webdav(
                 parameter_map=webdav_params,
                 webdav_dir=webdav_target_dir,
                 export_id=export_id,
@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
         elif packer in ['zip', 'tar.gz']:
             # copy the exported archive files from the export to the webdav target directory
-            rclone_response = rclone_copyurl_to_webdav(
+            _ = rclone_copyurl_to_webdav(
                 parameter_map=webdav_params,
                 webdav_dir=webdav_target_dir,
                 export_id=export_id,

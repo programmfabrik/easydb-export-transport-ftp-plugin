@@ -2,6 +2,7 @@
 
 import sys
 import os
+import re
 import json
 import subprocess
 import urlparse
@@ -71,6 +72,19 @@ def check_stderr(stderr):
     if len(stderr) == 1:
         if len(stderr[0]) < 1:
             return
+
+    # check for stderr lines from rclone that actually contain information about success
+    # some might be disguised as errors
+    inicators_rclone_success = [
+        r'^.*Attempt .*succeeded$'
+    ]
+
+    i = len(stderr) - 1
+    while i >= 0:
+        for s in inicators_rclone_success:
+            if re.match(s, stderr[i]) is not None:
+                return
+        i -= 1
 
     raise CommandlineErrorException(stderr)
 
