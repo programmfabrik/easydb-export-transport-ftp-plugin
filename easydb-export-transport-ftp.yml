@@ -1,5 +1,5 @@
 plugin:
-  name: easydb-export-transport-ftp
+  name: easydb-export-transport-ftp-plugin
   version: 1.0
   server:
     api-version:
