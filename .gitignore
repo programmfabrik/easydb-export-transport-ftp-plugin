@@ -7,3 +7,5 @@ build-info.json
 \#*\#
 commit.txt
 *.pyc
+files/
+*.sh

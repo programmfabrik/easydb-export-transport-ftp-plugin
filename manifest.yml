@@ -1,0 +1,41 @@
+plugin:
+  name: easydb-export-transport-ftp
+  version: 1.0
+  server:
+    api-version:
+      require: 1
+  webfrontend:
+    url: easydb-export-transport-ftp.js
+    l10n: l10n/
+
+python-2:
+  file: src/server/easydb-export-transport-ftp.py
+
+# callback registration in fylr
+callbacks:
+
+  export_transport/transport_ftp:
+    exec:
+      service: python
+      commands:
+        - prog: python
+          stdout:
+            type: body
+          args:
+            - type: value
+              value: src/server/easydb-export-transport-fylr-ftp.py
+            - type: value
+              value: "%info.json%"
+
+  export_transport/transport_webdav:
+    exec:
+      service: python
+      commands:
+        - prog: python
+          stdout:
+            type: body
+          args:
+            - type: value
+              value: src/server/easydb-export-transport-fylr-webdav.py
+            - type: value
+              value: "%info.json%"
