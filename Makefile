@@ -12,7 +12,7 @@ INSTALL_FILES = \
 	$(WEB)/l10n/it-IT.json \
 	$(JS) \
 	src/server/$(PLUGIN_NAME).py \
-	$(PLUGIN_NAME).yml
+	manifest.yml
 
 COFFEE_FILES = 	src/webfrontend/ExportTransportFTP.coffee \
 				src/webfrontend/ExportTransportWebDAV.coffee
