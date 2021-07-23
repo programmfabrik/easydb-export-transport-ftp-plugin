@@ -1,4 +1,5 @@
 PLUGIN_NAME = easydb-export-transport-ftp
+PLUGIN_PATH = easydb-export-transport-ftp-plugin
 
 L10N_FILES = l10n/$(PLUGIN_NAME).csv
 L10N_GOOGLE_KEY = 1Z3UPJ6XqLBp-P8SUf-ewq4osNJ3iZWKJB83tc6Wrfn0
