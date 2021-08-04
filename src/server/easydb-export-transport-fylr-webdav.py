@@ -7,10 +7,12 @@ import json
 from shared import util
 
 
-def rclone_sync_to_webdav(parameter_map, webdav_dir, export_id, export_name, api_url, api_token):
+def rclone_sync_to_webdav(parameter_map, webdav_dir, export_id, export_name, transport_uuid, api_url, api_token):
     parameter_map['http-url'] = util.format_export_http_url(api_url,
                                                             api_token,
-                                                            export_id)
+                                                            export_id,
+                                                            transport_uuid=transport_uuid,
+                                                            transport_packer=None)
     parameters = [
         'sync',
         ':http:',
@@ -28,7 +30,8 @@ def rclone_copyurl_to_webdav(parameter_map, webdav_dir, export_id, export_name, 
     http_url = util.format_export_http_url(api_url,
                                            api_token,
                                            export_id,
-                                           transport_packer)
+                                           transport_uuid=None,
+                                           transport_packer=transport_packer)
     webdav_url = ':webdav:/{0}/{1}.{2}'.format(
         '/{0}'.format(webdav_dir) if len(webdav_dir) > 0 else '',
         export_name,
@@ -68,6 +71,8 @@ if __name__ == '__main__':
         # read from transport definition
         transport_def = util.get_json_value(info_json, 'transport', True)
 
+        transport_uuid = util.get_json_value(transport_def, 'uuid', True)
+
         webdav_target_dir = util.get_json_value(
             transport_def, 'options.directory')
         if webdav_target_dir is None:
@@ -106,6 +111,7 @@ if __name__ == '__main__':
                 webdav_dir=webdav_target_dir,
                 export_id=export_id,
                 export_name=export_name,
+                transport_uuid=transport_uuid,
                 api_url=api_callback_url,
                 api_token=api_callback_token
             )

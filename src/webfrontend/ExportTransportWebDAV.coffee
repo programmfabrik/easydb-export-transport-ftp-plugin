@@ -1,6 +1,6 @@
 class ExportTransportWebDAV extends ExportTransportPlugin
 	getType: ->
-		"easydb-export-transport-ftp:transport_webdav"
+		"easydb-export-transport-ftp-plugin:transport_webdav"
 
 	getDisplayType: ->
 		$$("export.transport.webdav.type|text")

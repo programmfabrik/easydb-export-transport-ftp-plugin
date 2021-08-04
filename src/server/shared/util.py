@@ -23,7 +23,7 @@ def get_json_value(js, path, expected=False):
 
 def run_command(command, parameters, verbose=False):
     if verbose:
-        print '>', command, ' '.join(parameters)
+        stderr('> %s %s' % (command, ' '.join(parameters)))
 
     process = subprocess.Popen([command] + parameters,
                                stdout=subprocess.PIPE,
@@ -146,7 +146,7 @@ def parse_ftp_url(url):
     return scheme, hostname, port
 
 
-def format_export_http_url(api_url, api_token, export_id, transport_packer=None):
+def format_export_http_url(api_url, api_token, export_id, transport_uuid=None, transport_packer=None):
 
     path_for_packer = {
         'zip': 'zip',
@@ -157,7 +157,7 @@ def format_export_http_url(api_url, api_token, export_id, transport_packer=None)
         return '{0}/export/{1}/uuid/{2}/file/'.format(
             api_url,
             export_id,
-            api_token)
+            transport_uuid)
 
     return '{0}/export/{1}/{2}/?token={3}&disposition=attachment'.format(
         api_url,

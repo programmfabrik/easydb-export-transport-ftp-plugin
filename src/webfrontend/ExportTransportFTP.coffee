@@ -1,7 +1,7 @@
 class ExportTransportFTP extends ExportTransportPlugin
 	getType: ->
 		if ez5.version("6")
-			"easydb-export-transport-ftp:transport_ftp"
+			"easydb-export-transport-ftp-plugin:transport_ftp"
 		else
 			return "ftp"
 

@@ -7,11 +7,13 @@ import json
 from shared import util
 
 
-def rclone_sync_to_ftp(parameter_map, rclone_ftp_method, ftp_dir, export_id, export_name, api_url, api_token, additional_parameters=[]):
+def rclone_sync_to_ftp(parameter_map, rclone_ftp_method, ftp_dir, export_id, export_name, transport_uuid, api_url, api_token, additional_parameters=[]):
 
     http_url = util.format_export_http_url(api_url,
                                            api_token,
-                                           export_id)
+                                           export_id,
+                                           transport_uuid=transport_uuid,
+                                           transport_packer=None)
 
     ftp_url = ':{0}:{1}/{2}'.format(
         rclone_ftp_method,
@@ -36,7 +38,8 @@ def rclone_copyurl_to_ftp(parameter_map, rclone_ftp_method, ftp_dir, export_id, 
     http_url = util.format_export_http_url(api_url,
                                            api_token,
                                            export_id,
-                                           transport_packer)
+                                           transport_uuid=None,
+                                           transport_packer=transport_packer)
 
     ftp_url = ':{0}:{1}/{2}.{3}'.format(
         rclone_ftp_method,
@@ -77,6 +80,8 @@ if __name__ == '__main__':
 
         # read from transport definition
         transport_def = util.get_json_value(info_json, 'transport', True)
+
+        transport_uuid = util.get_json_value(transport_def, 'uuid', True)
 
         ftp_target_dir = util.get_json_value(
             transport_def, 'options.directory')
@@ -137,6 +142,7 @@ if __name__ == '__main__':
                 ftp_dir=ftp_target_dir,
                 export_id=export_id,
                 export_name=export_name,
+                transport_uuid=transport_uuid,
                 api_url=api_callback_url,
                 api_token=api_callback_token,
                 additional_parameters=additional_parameters
