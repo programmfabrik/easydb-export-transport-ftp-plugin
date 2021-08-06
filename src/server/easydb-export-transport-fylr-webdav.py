@@ -134,8 +134,8 @@ if __name__ == '__main__':
         util.return_json_body(response)
 
     except util.CommandlineErrorException as e:
-        print(str(e))
+        print((str(e)))
         util.return_error('rclone_error', str(e))
     except Exception as e:
-        print(str(e))
+        print((str(e)))
         util.return_error('internal', str(e))

@@ -29,7 +29,7 @@ class util_parse_ftp_url(unittest.TestCase):
             ('ftp:///schema.easydb.de:21', None, None, None),
         ]:
             ftp_protocol, ftp_host, ftp_port = util.parse_ftp_url(c[0])
-            print c[0], '->', ftp_protocol, ftp_host, ftp_port
+            print(c[0], '->', ftp_protocol, ftp_host, ftp_port)
 
             self.assertEqual(ftp_protocol, c[1])
             self.assertEqual(ftp_host, c[2])

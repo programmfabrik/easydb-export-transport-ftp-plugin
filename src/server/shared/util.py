@@ -5,7 +5,7 @@ import os
 import re
 import json
 import subprocess
-import urlparse
+import urllib.parse
 
 
 def get_json_value(js, path, expected=False):
@@ -116,7 +116,7 @@ def return_json_body(msg):
 
 
 def parse_ftp_url(url):
-    url_parts = urlparse.urlparse(url)
+    url_parts = urllib.parse.urlparse(url)
 
     # assume protocol ftp if not specified
     scheme = url_parts.scheme if url_parts.scheme != '' else 'ftp'
@@ -178,10 +178,8 @@ def run_rclone_command(parameters, verbose=False):
 
 
 def add_rclone_parameters(parameter_map, additional_parameters=[]):
-    parameters = map(lambda p: '--{0}={1}'.format(p, parameter_map[p]),
-                     parameter_map)
-    parameters += map(lambda p: '--{0}'.format(p),
-                      additional_parameters)
+    parameters = ['--{0}={1}'.format(p, parameter_map[p]) for p in parameter_map]
+    parameters += ['--{0}'.format(p) for p in additional_parameters]
     return parameters
 
 

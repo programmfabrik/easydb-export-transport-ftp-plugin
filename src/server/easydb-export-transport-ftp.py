@@ -202,7 +202,7 @@ class FTP(object):
                             continue
                         try:
                             ftp.mkd(dnpart)
-                        except Exception, e:
+                        except Exception as e:
                             # somewhat complicated to detect "file exists",
                             # RFC 959: '521-"/usr/dm/pathname" directory already exists;'
                             # ProFTPd: '550 S2@g_n_a_r_g: File exists'
