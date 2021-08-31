@@ -5,7 +5,7 @@ import os
 import re
 import json
 import subprocess
-import urllib
+from urllib.parse import urlparse
 
 
 def get_json_value(js, path, expected=False):
@@ -82,7 +82,8 @@ def check_stderr(stderr):
     i = len(stderr) - 1
     while i >= 0:
         for s in inicators_rclone_success:
-            if re.match(s, stderr[i]) is not None:
+            stderr_text = stderr[i].decode('utf-8')
+            if re.match(s, stderr_text) is not None:
                 return
         i -= 1
 
@@ -116,7 +117,7 @@ def return_json_body(msg):
 
 
 def parse_ftp_url(url):
-    url_parts = urllib.urllib(url)
+    url_parts = urlparse(url)
 
     # assume protocol ftp if not specified
     scheme = url_parts.scheme if url_parts.scheme != '' else 'ftp'
