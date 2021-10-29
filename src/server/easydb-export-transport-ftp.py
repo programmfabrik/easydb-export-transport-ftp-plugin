@@ -211,7 +211,7 @@ class FTP(object):
                                     self.logger.warn('%s error when trying to create directory: %s' % (self.server_protocol_str, e.args[0]))
                         ftp.cwd(dnpart)
 
-                ftp.storbinary("STOR %s" % os.path.basename(rfn), open(local_file))
+                ftp.storbinary("STOR %s" % os.path.basename(rfn), open(local_file, 'rb'))
                 store_success_msg = "stored %s as %s on %s server %s" % (rfn, os.path.join(dn, os.path.basename(rfn)), self.server_protocol_str, self.server)
                 self.logger.debug(store_success_msg)
 

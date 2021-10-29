@@ -39,9 +39,9 @@ def run_command(command, parameters, verbose=False):
         return_code = process.poll()
         if return_code is not None:
             for output in process.stdout.readlines():
-                stdout_response.append(output)
+                stdout_response.append(output.decode('utf-8'))
             for output in process.stderr.readlines():
-                stderr_response.append(output)
+                stderr_response.append(output.decode('utf-8'))
             break
 
     return stdout_response, stderr_response
