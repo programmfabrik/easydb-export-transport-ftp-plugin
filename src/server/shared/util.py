@@ -59,7 +59,7 @@ def create_missing_dirs_from_filepath(f_path):
 class CommandlineErrorException(Exception):
 
     def __init__(self, msg_lines):
-        self.msg_lines = msg_lines
+        self.msg_lines = map(str, msg_lines)
 
     def __str__(self):
         return 'command line returned an error:\n' + '\n'.join(self.msg_lines)
@@ -180,9 +180,9 @@ def run_rclone_command(parameters, verbose=False):
 
 def add_rclone_parameters(parameter_map, additional_parameters=[]):
     parameters = list(map(lambda p: '--{0}={1}'.format(p, parameter_map[p]),
-                     parameter_map))
+                          parameter_map))
     parameters += list(map(lambda p: '--{0}'.format(p),
-                      additional_parameters))
+                           additional_parameters))
     return parameters
 
 
