@@ -59,7 +59,7 @@ def create_missing_dirs_from_filepath(f_path):
 class CommandlineErrorException(Exception):
 
     def __init__(self, msg_lines):
-        self.msg_lines = msg_lines
+        self.msg_lines = map(str, msg_lines)
 
     def __str__(self):
         return 'command line returned an error:\n' + '\n'.join(self.msg_lines)
@@ -82,7 +82,8 @@ def check_stderr(stderr):
     i = len(stderr) - 1
     while i >= 0:
         for s in inicators_rclone_success:
-            if re.match(s, stderr[i]) is not None:
+            stderr_text = stderr[i].decode('utf-8')
+            if re.match(s, stderr_text) is not None:
                 return
         i -= 1
 

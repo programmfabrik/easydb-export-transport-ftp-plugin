@@ -16,9 +16,9 @@ callbacks:
 
   export_transport/transport_ftp:
     exec:
-      service: python
+      service: python3
       commands:
-        - prog: python
+        - prog: python3
           stdout:
             type: body
           args:
@@ -29,9 +29,9 @@ callbacks:
 
   export_transport/transport_webdav:
     exec:
-      service: python
+      service: python3
       commands:
-        - prog: python
+        - prog: python3
           stdout:
             type: body
           args:
