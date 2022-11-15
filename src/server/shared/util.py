@@ -39,9 +39,9 @@ def run_command(command, parameters, verbose=False):
         return_code = process.poll()
         if return_code is not None:
             for output in process.stdout.readlines():
-                stdout_response.append(output.decode('utf-8'))
+                stdout_response.append(output)
             for output in process.stderr.readlines():
-                stderr_response.append(output.decode('utf-8'))
+                stderr_response.append(output)
             break
 
     return stdout_response, stderr_response
@@ -75,19 +75,25 @@ def check_stderr(stderr):
 
     # check for stderr lines from rclone that actually contain information about success
     # some might be disguised as errors
+    # also there can be information that certain files or directories are ignored which also is marked as an error
     inicators_rclone_success = [
-        r'^.*Attempt .*succeeded$'
+        r'^.*Attempt .*succeeded$',
+        r'.*Entry doesn\'t belong in directory.+- ignoring',
     ]
 
-    i = len(stderr) - 1
-    while i >= 0:
+    i = 0
+    while i < len(stderr):
+        ignore = False
+        stderr_text = stderr[i].decode('utf-8')
         for s in inicators_rclone_success:
-            stderr_text = stderr[i].decode('utf-8')
             if re.match(s, stderr_text) is not None:
-                return
-        i -= 1
+                ignore = True
+                break
 
-    raise CommandlineErrorException(stderr)
+        if not ignore:
+            raise CommandlineErrorException(stderr)
+
+        i += 1
 
 
 def stdout(line):
@@ -155,12 +161,12 @@ def format_export_http_url(api_url, api_token, export_id, transport_uuid=None, t
     }
 
     if transport_packer is None:
-        return '{0}/export/{1}/uuid/{2}/file/'.format(
+        return '{0}/api/v1/export/{1}/uuid/{2}/file/'.format(
             api_url,
             export_id,
             transport_uuid)
 
-    return '{0}/export/{1}/{2}/?token={3}&disposition=attachment'.format(
+    return '{0}/api/v1/export/{1}/{2}/?access_token={3}&disposition=attachment'.format(
         api_url,
         export_id,
         path_for_packer[transport_packer],
@@ -179,7 +185,8 @@ def run_rclone_command(parameters, verbose=False):
 
 
 def add_rclone_parameters(parameter_map, additional_parameters=[]):
-    parameters = ['--{0}={1}'.format(p, parameter_map[p]) for p in parameter_map]
+    parameters = ['--{0}={1}'.format(p, parameter_map[p])
+                  for p in parameter_map]
     parameters += ['--{0}'.format(p) for p in additional_parameters]
     return parameters
 

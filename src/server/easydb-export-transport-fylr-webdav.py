@@ -21,7 +21,7 @@ def rclone_sync_to_webdav(parameter_map, webdav_dir, export_id, export_name, tra
             export_name)
     ] + util.add_rclone_parameters(parameter_map)
 
-    stdout, stderr = util.run_rclone_command(parameters)
+    stdout, stderr = util.run_rclone_command(parameters, verbose=True)
     util.check_stderr(stderr)
     return stdout
 
@@ -43,7 +43,7 @@ def rclone_copyurl_to_webdav(parameter_map, webdav_dir, export_id, export_name, 
         webdav_url
     ] + util.add_rclone_parameters(parameter_map)
 
-    stdout, stderr = util.run_rclone_command(parameters)
+    stdout, stderr = util.run_rclone_command(parameters, verbose=True)
     util.check_stderr(stderr)
     return stdout
 
@@ -131,6 +131,7 @@ if __name__ == '__main__':
         else:
             raise Exception('unknown packer {}'.format(packer))
 
+        response['_state'] = 'done'
         util.return_json_body(response)
 
     except util.CommandlineErrorException as e:

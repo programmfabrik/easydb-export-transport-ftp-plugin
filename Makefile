@@ -13,6 +13,8 @@ INSTALL_FILES = \
 	$(WEB)/l10n/it-IT.json \
 	$(JS) \
 	src/server/$(PLUGIN_NAME).py \
+	src/server/easydb-export-transport-fylr-ftp.py \
+	src/server/easydb-export-transport-fylr-webdav.py \
 	manifest.yml
 
 COFFEE_FILES = 	src/webfrontend/ExportTransportFTP.coffee \

@@ -65,6 +65,9 @@ if __name__ == '__main__':
         # read from %info.json% (needs to be given as the first argument)
         info_json = json.loads(sys.argv[1])
 
+        with open('/tmp/fylr_transport_ftp.json', 'w') as f:
+            f.write(json.dumps(info_json, indent=4))
+
         response = util.get_json_value(info_json, 'export', True)
         basepath = os.path.abspath(os.path.dirname(__file__))
 
