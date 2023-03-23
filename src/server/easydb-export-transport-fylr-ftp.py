@@ -168,6 +168,9 @@ if __name__ == '__main__':
         else:
             raise Exception('unknown packer {}'.format(packer))
 
+        response['_state'] = 'done'
+        response['_transport_log'] = []
+
         util.return_json_body(response)
 
     except util.CommandlineErrorException as e:

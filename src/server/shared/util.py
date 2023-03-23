@@ -89,11 +89,10 @@ def check_stderr(stderr):
             if re.match(s, stderr_text) is not None:
                 ignore = True
                 break
-
-        if not ignore:
-            raise CommandlineErrorException(stderr)
-
         i += 1
+
+    if not ignore:
+        raise CommandlineErrorException(stderr)
 
 
 def stdout(line):
@@ -197,4 +196,9 @@ def rclone_obscure_password(pw_cleartext):
         pw_cleartext
     ])
     check_stderr(stderr)
-    return stdout[0]
+
+    obscure_password = str(stdout[0])
+    if obscure_password.startswith('b\'') and obscure_password.endswith('\''):
+        return obscure_password[2:-1]
+
+    return obscure_password
