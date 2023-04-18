@@ -58,11 +58,11 @@ def create_missing_dirs_from_filepath(f_path):
 
 class CommandlineErrorException(Exception):
 
-    def __init__(self, msg_lines):
-        self.msg_lines = map(str, msg_lines)
+    def __init__(self, msg):
+        self.__msg = msg
 
     def __str__(self):
-        return 'command line returned an error:\n' + '\n'.join(self.msg_lines)
+        return 'command line returned an error:\n' + self.__msg
 
 
 def check_stderr(stderr):
@@ -81,18 +81,17 @@ def check_stderr(stderr):
         r'.*Entry doesn\'t belong in directory.+- ignoring',
     ]
 
-    i = 0
-    while i < len(stderr):
+    stderr_strings = [se.decode('utf-8') for se in stderr]
+
+    for s in stderr_strings:
         ignore = False
-        stderr_text = stderr[i].decode('utf-8')
-        for s in inicators_rclone_success:
-            if re.match(s, stderr_text) is not None:
+        for i in inicators_rclone_success:
+            if re.match(i, s) is not None:
                 ignore = True
                 break
-        i += 1
 
     if not ignore:
-        raise CommandlineErrorException(stderr)
+        raise CommandlineErrorException('\n'.join(stderr_strings))
 
 
 def stdout(line):
