@@ -28,8 +28,8 @@ def rclone_sync_to_ftp(parameter_map, rclone_ftp_method, ftp_dir, export_id, exp
         ftp_url
     ] + util.add_rclone_parameters(parameter_map, additional_parameters)
 
-    stdout, stderr = util.run_rclone_command(parameters)
-    util.check_stderr(stderr)
+    exit_code, stdout, stderr = util.run_rclone_command(parameters)
+    util.check_stderr(exit_code, stderr)
     return stdout
 
 
@@ -53,8 +53,8 @@ def rclone_copyurl_to_ftp(parameter_map, rclone_ftp_method, ftp_dir, export_id, 
         ftp_url
     ] + util.add_rclone_parameters(parameter_map, additional_parameters)
 
-    stdout, stderr = util.run_rclone_command(parameters)
-    util.check_stderr(stderr)
+    exit_code, stdout, stderr = util.run_rclone_command(parameters)
+    util.check_stderr(exit_code, stderr)
     return stdout
 
 

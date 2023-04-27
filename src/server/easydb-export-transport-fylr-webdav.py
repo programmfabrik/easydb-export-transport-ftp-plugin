@@ -21,8 +21,8 @@ def rclone_sync_to_webdav(parameter_map, webdav_dir, export_id, export_name, tra
             export_name)
     ] + util.add_rclone_parameters(parameter_map)
 
-    stdout, stderr = util.run_rclone_command(parameters, verbose=True)
-    util.check_stderr(stderr)
+    exit_code, stdout, stderr = util.run_rclone_command(parameters, verbose=True)
+    util.check_stderr(exit_code, stderr)
     return stdout
 
 
@@ -43,8 +43,8 @@ def rclone_copyurl_to_webdav(parameter_map, webdav_dir, export_id, export_name, 
         webdav_url
     ] + util.add_rclone_parameters(parameter_map)
 
-    stdout, stderr = util.run_rclone_command(parameters, verbose=True)
-    util.check_stderr(stderr)
+    exit_code, stdout, stderr = util.run_rclone_command(parameters, verbose=True)
+    util.check_stderr(exit_code, stderr)
     return stdout
 
 

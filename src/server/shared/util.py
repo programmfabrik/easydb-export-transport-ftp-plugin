@@ -31,20 +31,26 @@ def run_command(command, parameters, verbose=False):
 
     stdout_response = []
     stderr_response = []
+    exit_code = 0
 
     while True:
         stdout_response.append(process.stdout.readline().strip())
         stderr_response.append(process.stderr.readline().strip())
 
-        return_code = process.poll()
-        if return_code is not None:
+        exit_code = process.poll()
+        if exit_code is not None:
             for output in process.stdout.readlines():
                 stdout_response.append(output)
             for output in process.stderr.readlines():
                 stderr_response.append(output)
             break
 
-    return stdout_response, stderr_response
+    # multiply return code by -1 to get actual returncode
+    # from docu: "A negative value -N indicates that the child was terminated by signal N (POSIX only)."
+    if exit_code != None and exit_code < 0:
+        exit_code *= -1
+
+    return exit_code, stdout_response, stderr_response
 
 
 def create_missing_dirs(dir_path):
@@ -65,22 +71,9 @@ class CommandlineErrorException(Exception):
         return 'command line returned an error:\n' + self.__msg
 
 
-def check_stderr(stderr):
-    if len(stderr) < 1:
+def check_stderr(exit_code, stderr):
+    if exit_code == 0:
         return
-
-    if len(stderr) == 1:
-        if len(stderr[0]) < 1:
-            return
-
-    # check for stderr lines from rclone that actually contain information about success
-    # some might be disguised as errors
-    # also there can be information that certain files or directories are ignored which also is marked as an error
-    inicators_rclone_success = [
-        r'^.*Attempt .*succeeded$',
-        r'.*Entry doesn\'t belong in directory.+- ignoring',
-        r'.*SetModTime is not supported',
-    ]
 
     # ignore all empty lines from stderr
     stderr_strings = []
@@ -90,15 +83,7 @@ def check_stderr(stderr):
             continue
         stderr_strings.append(se_str)
 
-    for s in stderr_strings:
-        ignore = False
-        for i in inicators_rclone_success:
-            if re.match(i, s) is not None:
-                ignore = True
-                break
-
-    if not ignore:
-        raise CommandlineErrorException('\n'.join(stderr_strings))
+    raise CommandlineErrorException('exit code: %d\n%s'.format(exit_code, '\n'.join(stderr_strings)))
 
 
 def stdout(line):
@@ -197,11 +182,11 @@ def add_rclone_parameters(parameter_map, additional_parameters=[]):
 
 
 def rclone_obscure_password(pw_cleartext):
-    stdout, stderr = run_rclone_command([
+    exit_code, stdout, stderr = run_rclone_command([
         'obscure',
         pw_cleartext
     ])
-    check_stderr(stderr)
+    check_stderr(exit_code, stderr)
 
     obscure_password = str(stdout[0])
     if obscure_password.startswith('b\'') and obscure_password.endswith('\''):
