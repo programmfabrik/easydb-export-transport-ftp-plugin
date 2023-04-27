@@ -79,9 +79,16 @@ def check_stderr(stderr):
     inicators_rclone_success = [
         r'^.*Attempt .*succeeded$',
         r'.*Entry doesn\'t belong in directory.+- ignoring',
+        r'.*SetModTime is not supported',
     ]
 
-    stderr_strings = [se.decode('utf-8') for se in stderr]
+    # ignore all empty lines from stderr
+    stderr_strings = []
+    for se in stderr:
+        se_str = se.decode('utf-8').strip()
+        if len(se_str) < 1:
+            continue
+        stderr_strings.append(se_str)
 
     for s in stderr_strings:
         ignore = False
