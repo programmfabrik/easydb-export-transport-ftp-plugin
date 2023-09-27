@@ -1,5 +1,6 @@
 plugin:
   name: easydb-export-transport-ftp-plugin
+  url: https://github.com/programmfabrik/easydb-export-transport-ftp-plugin
   displayname:
     en-US: "Export FTP Transport Plugin"
     de-DE: "Export FTP Transport Plugin"
