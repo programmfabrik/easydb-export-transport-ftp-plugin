@@ -1,26 +1,26 @@
 key,de-DE,R,en-US,R,da-DK,R,fi-FI,R,sv-SE,R,fr-FR,R,it-IT,R,es-ES,R
-export.transport.ftp.option.directory,Verzeichnis,FALSE,Directory,FALSE,Directory,FALSE,Hakemisto,FALSE,Sökväg,FALSE,,FALSE,,FALSE,,FALSE
+export.transport.ftp.option.directory,Verzeichnis,FALSE,Directory,FALSE,Directory,FALSE,Hakemisto,FALSE,Sökväg,FALSE,Annuaire,FALSE,,FALSE,,FALSE
 export.transport.ftp.option.hint.directory,Zum Beispiel: /data (optional),FALSE,For example: /data (optional),FALSE,For example: /data (optional),FALSE,Esimerkiksi: /data (valinnainen),FALSE,"Till exempel: /data
-(valfritt)",FALSE,,FALSE,,FALSE,,FALSE
-export.transport.ftp.option.hint.server,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,,FALSE,,FALSE,,FALSE
-export.transport.ftp.option.login,Login,FALSE,Login,FALSE,Login,FALSE,Käyttäjätunnus,FALSE,Användarnamn,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.ftp.option.packer,Komprimierung,FALSE,Compression,FALSE,Compression,FALSE,Pakkaus,FALSE,Kompression,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.ftp.option.password,Passwort,FALSE,Password,FALSE,Password,FALSE,Salasana,FALSE,Lösenord,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.ftp.option.server,Server,FALSE,Server,FALSE,Server,FALSE,Palvelin,FALSE,Server,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.ftp.type|icon,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.ftp.type|text,FTP,FALSE,FTP,FALSE,FTP,FALSE,FTP,FALSE,FTP,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.packer.folder,Keine (ganzes Export-Verzeichnis kopieren),FALSE,None (copy complete export directory),FALSE,None (copy complete export directory),FALSE,Ei mitään (kopioi koko vientihakemisto),FALSE,Ingen (kopiera hela exportkatalogen),FALSE,,FALSE,,FALSE,,FALSE
-export.transport.packer.tar.gz,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.packer.zip,zip,FALSE,zip,FALSE,zip,FALSE,zip,FALSE,zip,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.webdav.option.directory,Verzeichnis,FALSE,Directory,FALSE,Directory,FALSE,Hakemisto,FALSE,Sökväg,FALSE,,FALSE,,FALSE,,FALSE
+(valfritt)",FALSE,Par exemple : /data (optionnel),FALSE,,FALSE,,FALSE
+export.transport.ftp.option.hint.server,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,,FALSE,,FALSE
+export.transport.ftp.option.login,Login,FALSE,Login,FALSE,Login,FALSE,Käyttäjätunnus,FALSE,Användarnamn,FALSE,Connexion,FALSE,,FALSE,,FALSE
+export.transport.ftp.option.packer,Komprimierung,FALSE,Compression,FALSE,Compression,FALSE,Pakkaus,FALSE,Kompression,FALSE,Compression,FALSE,,FALSE,,FALSE
+export.transport.ftp.option.password,Passwort,FALSE,Password,FALSE,Password,FALSE,Salasana,FALSE,Lösenord,FALSE,Mot de passe,FALSE,,FALSE,,FALSE
+export.transport.ftp.option.server,Server,FALSE,Server,FALSE,Server,FALSE,Palvelin,FALSE,Server,FALSE,Serveur,FALSE,,FALSE,,FALSE
+export.transport.ftp.type|icon,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,,FALSE,,FALSE
+export.transport.ftp.type|text,FTP,FALSE,FTP,FALSE,FTP,FALSE,FTP,FALSE,FTP,FALSE,FTP,FALSE,,FALSE,,FALSE
+export.transport.packer.folder,Keine (ganzes Export-Verzeichnis kopieren),FALSE,None (copy complete export directory),FALSE,None (copy complete export directory),FALSE,Ei mitään (kopioi koko vientihakemisto),FALSE,Ingen (kopiera hela exportkatalogen),FALSE,Aucun (copier le répertoire d'exportation complet),FALSE,,FALSE,,FALSE
+export.transport.packer.tar.gz,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,,FALSE,,FALSE
+export.transport.packer.zip,zip,FALSE,zip,FALSE,zip,FALSE,zip,FALSE,zip,FALSE,zip,FALSE,,FALSE,,FALSE
+export.transport.webdav.option.directory,Verzeichnis,FALSE,Directory,FALSE,Directory,FALSE,Hakemisto,FALSE,Sökväg,FALSE,Annuaire,FALSE,,FALSE,,FALSE
 export.transport.webdav.option.hint.directory,Zum Beispiel: /data (optional),FALSE,For example: /data (optional),FALSE,For example: /data (optional),FALSE,Esimerkiksi: /data (valinnainen),FALSE,"Till exempel: /data
-(valfritt)",FALSE,,FALSE,,FALSE,,FALSE
-export.transport.webdav.option.hint.login,optional,FALSE,optional,FALSE,optional,FALSE,valinnainen,FALSE,valfritt,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.webdav.option.hint.password,optional,FALSE,optional,FALSE,optional,FALSE,valinnainen,FALSE,valfritt,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.webdav.option.hint.server,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,,FALSE,,FALSE,,FALSE
-export.transport.webdav.option.login,Login,FALSE,Login,FALSE,Login,FALSE,Käyttäjätunnus,FALSE,Användarnamn,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.webdav.option.packer,Komprimierung,FALSE,Compression,FALSE,Compression,FALSE,Pakkaus,FALSE,Kompression,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.webdav.option.password,Passwort,FALSE,Password,FALSE,Password,FALSE,Salasana,FALSE,Lösenord,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.webdav.option.server,Server,FALSE,Server,FALSE,Server,FALSE,Palvelin,FALSE,Server,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.webdav.type|icon,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,,FALSE,,FALSE,,FALSE
-export.transport.webdav.type|text,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,,FALSE,,FALSE,,FALSE
+(valfritt)",FALSE,Par exemple : /data (optionnel),FALSE,,FALSE,,FALSE
+export.transport.webdav.option.hint.login,optional,FALSE,optional,FALSE,optional,FALSE,valinnainen,FALSE,valfritt,FALSE,facultatif,FALSE,,FALSE,,FALSE
+export.transport.webdav.option.hint.password,optional,FALSE,optional,FALSE,optional,FALSE,valinnainen,FALSE,valfritt,FALSE,facultatif,FALSE,,FALSE,,FALSE
+export.transport.webdav.option.hint.server,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,,FALSE,,FALSE
+export.transport.webdav.option.login,Login,FALSE,Login,FALSE,Login,FALSE,Käyttäjätunnus,FALSE,Användarnamn,FALSE,Connexion,FALSE,,FALSE,,FALSE
+export.transport.webdav.option.packer,Komprimierung,FALSE,Compression,FALSE,Compression,FALSE,Pakkaus,FALSE,Kompression,FALSE,Compression,FALSE,,FALSE,,FALSE
+export.transport.webdav.option.password,Passwort,FALSE,Password,FALSE,Password,FALSE,Salasana,FALSE,Lösenord,FALSE,Mot de passe,FALSE,,FALSE,,FALSE
+export.transport.webdav.option.server,Server,FALSE,Server,FALSE,Server,FALSE,Palvelin,FALSE,Server,FALSE,Serveur,FALSE,,FALSE,,FALSE
+export.transport.webdav.type|icon,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,,FALSE,,FALSE
+export.transport.webdav.type|text,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,,FALSE,,FALSE
