@@ -1,3 +1,3 @@
 # easydb-export-transport-ftp
 
-easydb export plugin to transport exports by ftp.
+Export for **easydb5** and **fylr** plugin to transport exports by ftp.
