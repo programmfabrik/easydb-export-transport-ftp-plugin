@@ -24,3 +24,4 @@ export.transport.webdav.option.password,Passwort,FALSE,Password,FALSE,Password,F
 export.transport.webdav.option.server,Server,FALSE,Server,FALSE,Server,FALSE,Palvelin,FALSE,Server,FALSE,Serveur,FALSE,,FALSE,,FALSE
 export.transport.webdav.type|icon,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,,FALSE,,FALSE
 export.transport.webdav.type|text,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,,FALSE,,FALSE
+export.manager.list.transport.node.type.easydb-export-transport-ftp-plugin:transport_ftp,FTP,FALSE,FTP,FALSE,,FALSE,,FALSE,,FALSE,,FALSE,,FALSE,,FALSE
