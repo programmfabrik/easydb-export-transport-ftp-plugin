@@ -79,6 +79,8 @@ class ExportTransportFTP extends ExportTransportPlugin
 		loc = CUI.parseLocation(data.options.server)
 		if not loc or not loc.hostname or not loc.protocol in ["ftp", "ftps", "sftp"]
 			throw new InvalidSaveDataException()
+		if not data.uuid? or data.uuid is ''
+			data.uuid = ez5.generateUUID()
 		return
 
 	supportsPacker: ->

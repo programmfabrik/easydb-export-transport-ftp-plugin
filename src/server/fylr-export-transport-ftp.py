@@ -24,7 +24,7 @@ def rclone_sync_to_ftp(opts: util.PluginInfoJson) -> list[str]:
         opts.additional_parameters,
     )
 
-    exit_code, stdout, stderr = util.run_rclone_command(parameters)
+    exit_code, stdout, stderr = util.run_rclone_command(parameters, verbose=True)
     util.check_stderr(exit_code, stderr)
     return stdout
 
@@ -44,7 +44,7 @@ def rclone_copyurl_to_ftp(opts: util.PluginInfoJson) -> list[str]:
         opts.additional_parameters,
     )
 
-    exit_code, stdout, stderr = util.run_rclone_command(parameters)
+    exit_code, stdout, stderr = util.run_rclone_command(parameters, verbose=True)
     util.check_stderr(exit_code, stderr)
     return stdout
 

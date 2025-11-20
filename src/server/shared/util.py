@@ -4,8 +4,7 @@ import sys
 import os
 import json
 import subprocess
-import urllib.parse
-
+import re
 
 # --------------------- fylr specific utils ---------------------
 
@@ -15,6 +14,7 @@ class PluginInfoJson:
     export: dict
 
     api_url: str
+    external_url: str
 
     export_id: int
     export_name: str
@@ -38,18 +38,31 @@ class PluginInfoJson:
     def format_export_http_url(self) -> str:
 
         path_for_packer = {
+            'folder': 'file',
             'zip': 'zip',
             'tar.gz': 'tar_gz',
         }
 
-        transport_packer = self.transport_packer
-        if not transport_packer:
-            transport_packer = 'folder'
+        packer = self.transport_packer
+        if not packer:
+            packer = 'folder'
 
-        if transport_packer in path_for_packer:
-            return f'{self.api_url}/api/v1/export/{self.export_id}/uuid/{self.transport_uuid}/{path_for_packer[transport_packer]}/'
+        packer_sub_path = path_for_packer.get(packer)
+        if not packer_sub_path:
+            raise Exception(f'transport.options.packer {packer} is invalid')
 
-        return f'{self.api_url}/api/v1/export/{self.export_id}/uuid/{self.transport_uuid}/file/'
+        base_url = ''
+        if self.external_url:
+            # plugin frontend part can also set an external url
+            base_url = self.external_url
+        else:
+            base_url = f'{self.api_url}/api/v1/export/{self.export_id}/uuid/{self.transport_uuid}'
+
+        # for example:
+        # - <url>/api/v1/export/1/uuid/12345674-890a-bcde-f123-4567890abcde/zip/
+        # - <url>/api/v1/export/1/uuid/12345674-890a-bcde-f123-4567890abcde/tar_gz/
+        # - <url>/api/v1/export/1/uuid/12345674-890a-bcde-f123-4567890abcde/file/
+        return f'{base_url}/{packer_sub_path}/'
 
     def __parse(self, info_json: dict) -> None:
 
@@ -76,6 +89,8 @@ class PluginInfoJson:
         __transport_def = info_json.get('transport')
         if not __transport_def:
             raise Exception('transport not set')
+
+        self.external_url = __transport_def.get('external_url')
 
         self.transport_uuid = __transport_def.get('uuid')
         if not self.transport_uuid:
@@ -169,18 +184,18 @@ def run_command(
     parameters: list,
     verbose: bool = False,
 ) -> tuple[int, list[str], list[str]]:
+    stdout_response: list[str] = []
+    stderr_response: list[str] = []
+    exit_code: int = 0
+
     if verbose:
-        stderr('> %s %s' % (command, ' '.join(parameters)))
+        stderr_response.append(f'> {command} {" ".join(parameters)}')
 
     process = subprocess.Popen(
         [command] + parameters,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
-
-    stdout_response: list[str] = []
-    stderr_response: list[str] = []
-    exit_code: int = 0
 
     if not process:
         return exit_code, stdout_response, stderr_response
@@ -192,7 +207,7 @@ def run_command(
             stderr_response.append(str(process.stderr.readline().strip()))
 
         code = process.poll()
-        if code:
+        if code is not None:
             exit_code = code
 
             if process.stdout:
@@ -230,17 +245,19 @@ class CommandlineErrorException(Exception):
         return 'command line returned an error:\n' + self.__msg
 
 
-def check_stderr(exit_code: int, stderr: list):
-    if exit_code == 0:
-        return
-
+def check_stderr(exit_code: int, stderr_lst: list):
     # ignore all empty lines from stderr
     stderr_strings = []
-    for se in stderr:
-        se_str = se.decode('utf-8').strip()
-        if len(se_str) < 1:
+    for se in stderr_lst:
+        se_str = se.strip()
+        if not se_str:
             continue
+
         stderr_strings.append(se_str)
+        stderr(se_str)
+
+    if exit_code == 0:
+        return
 
     raise CommandlineErrorException(
         'exit code: %d\n%s'.format(exit_code, '\n'.join(stderr_strings))
@@ -279,34 +296,45 @@ def return_json_body(msg: dict):
 
 
 def parse_ftp_url(url: str) -> tuple[str, str, int]:
-    url_parts = urllib.parse.urlparse(url)
+    scheme = ''
+    host = ''
+    port = 0
+
+    match = re.match(
+        r'^((?P<scheme>.+):\/\/){0,1}(?P<host>[^:\/]+)(:(?P<port>\d+)){0,1}\/*$',
+        url,
+    )
+    if not match:
+        return scheme, host, port
+
+    groups = match.groupdict()
+    if not groups:
+        return scheme, host, port
+
+    host = groups.get('host', '')
+    if not host:
+        return scheme, host, port
 
     # assume protocol ftp if not specified
-    scheme = url_parts.scheme if url_parts.scheme != '' else 'ftp'
-
-    # if hostname is empty (protocol was empty), assume path as hostname
-    hostname = url_parts.hostname
-    if hostname == '' or hostname is None:
-        if ':' in url_parts.path:
-            hostname = ':'.join(url_parts.path.split(':')[:-1])
-        else:
-            hostname = url_parts.path
-    if hostname == '' or hostname.startswith('/'):
-        return '', '', 0
+    scheme = groups.get('scheme')
+    if not scheme:
+        scheme = 'ftp'
 
     # assume standard port 21/22 if not specified
-    if url_parts.port is not None:
-        port = url_parts.port
-    elif scheme == 'ftp':
-        port = 21
-    elif scheme == 'ftps':
-        port = 21
-    elif scheme == 'sftp':
-        port = 22
-    else:
+    try:
+        port = int(groups.get('port', 0))
+    except Exception as e:
         port = 0
 
-    return scheme, hostname, port
+    if port == 0:
+        if scheme == 'ftp':
+            port = 21
+        elif scheme == 'ftps':
+            port = 21
+        elif scheme == 'sftp':
+            port = 22
+
+    return scheme, host, port
 
 
 # --------------------- rclone specific functions --------------------
