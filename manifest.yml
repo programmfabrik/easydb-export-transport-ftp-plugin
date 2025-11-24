@@ -30,7 +30,7 @@ callbacks:
               type: body
             args:
               - type: value
-                value: "%_exec.pluginDir%/src/server/easydb-export-transport-fylr-ftp.py"
+                value: "%_exec.pluginDir%/src/server/fylr-export-transport-ftp.py"
               - type: value
                 value: "%info.json%"
 
@@ -44,6 +44,6 @@ callbacks:
               type: body
             args:
               - type: value
-                value: "%_exec.pluginDir%/src/server/easydb-export-transport-fylr-webdav.py"
+                value: "%_exec.pluginDir%/src/server/fylr-export-transport-webdav.py"
               - type: value
                 value: "%info.json%"
