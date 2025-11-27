@@ -49,3 +49,22 @@ test:
 # 		cp $$f ${INSTALL_PREFIX}/server/base/plugins/transport/ftp/$$f; \
 # 	done
 
+
+# ----------------------------
+# fylr only
+
+BUILD_DIR=build
+ZIP_NAME=$(PLUGIN_PATH).zip
+
+zip: build
+	(rm $(BUILD_DIR)/$(ZIP_NAME) || true)
+	mkdir -p $(PLUGIN_PATH)/src
+	mkdir -p $(PLUGIN_PATH)/webfrontend/l10n
+	cp $(JS) $(PLUGIN_PATH)/webfrontend
+	cp -r src/server $(PLUGIN_PATH)/src/server
+	cp $(L10N_FILES) $(PLUGIN_PATH)/webfrontend/l10n
+	cp $(WEB)/l10n/*.json $(PLUGIN_PATH)/webfrontend/l10n
+	cp manifest.yml $(PLUGIN_PATH)
+	cp build-info.json $(PLUGIN_PATH)
+	zip $(BUILD_DIR)/$(ZIP_NAME) -r $(PLUGIN_PATH)/
+	rm -rf $(PLUGIN_PATH)
