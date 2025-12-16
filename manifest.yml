@@ -11,7 +11,7 @@ plugin:
   webfrontend:
     url: easydb-export-transport-ftp.js
     l10n: l10n/ # l10n json files for easydb5
-  l10n: webfrontend/l10n/easydb-export-transport-ftp.csv # l10n csv file for fylr
+  l10n: l10n/easydb-export-transport-ftp.csv # l10n csv file for fylr
 
 base_url_prefix: webfrontend
 
