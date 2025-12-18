@@ -21,7 +21,7 @@ COFFEE_FILES = 	src/webfrontend/ExportTransportFTP.coffee \
 				src/webfrontend/ExportTransportWebDAV.coffee
 
 
-all: build build-fylr
+all: build build_fylr
 
 include easydb-library/tools/base-plugins.make
 
@@ -29,7 +29,7 @@ build: code $(L10N) buildinfojson
 
 code: $(JS)
 
-clean: clean-base clean-fylr
+clean: clean-base clean_fylr
 
 wipe: wipe-base
 
@@ -55,16 +55,18 @@ test:
 
 FYLR_BUILD_DIR=build_fylr
 
-clean-fylr:
+clean_fylr:
 	rm -rf $(FYLR_BUILD_DIR)
 
-build-fylr: code buildinfojson
+build_fylr: code buildinfojson
 	mkdir -p             $(FYLR_BUILD_DIR)/$(PLUGIN_PATH)/l10n
 	cp -r build/*        $(FYLR_BUILD_DIR)/$(PLUGIN_PATH)
-	cp -f $(L10N_FILES)  $(FYLR_BUILD_DIR)/$(PLUGIN_PATH)
+	cp -f $(L10N_FILES)  $(FYLR_BUILD_DIR)/$(PLUGIN_PATH)/l10n
 	cp -r src/server     $(FYLR_BUILD_DIR)/$(PLUGIN_PATH)
 	cp manifest_fylr.yml $(FYLR_BUILD_DIR)/$(PLUGIN_PATH)/manifest.yml
 	cp build-info.json   $(FYLR_BUILD_DIR)/$(PLUGIN_PATH)
+# delete unnecessary files from a previous easdyb5 build process
+	rm -rf               $(FYLR_BUILD_DIR)/$(PLUGIN_PATH)/webfrontend/l10n
 
-zip: build-fylr
+zip: build_fylr
 	cd $(FYLR_BUILD_DIR) && zip $(PLUGIN_PATH).zip -r $(PLUGIN_PATH)
