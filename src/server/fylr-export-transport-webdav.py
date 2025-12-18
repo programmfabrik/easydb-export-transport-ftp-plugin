@@ -19,7 +19,7 @@ def rclone_sync_to_webdav(opts: util.PluginInfoJson) -> list[str]:
         ),
     ] + util.add_rclone_parameters(parameter_map)
 
-    exit_code, stdout, stderr = util.run_rclone_command(parameters, verbose=True)
+    exit_code, stdout, stderr = util.run_rclone_command(parameters, verbose=False)
     util.check_stderr(exit_code, stderr)
     return stdout
 
@@ -38,7 +38,7 @@ def rclone_copyurl_to_webdav(opts: util.PluginInfoJson) -> list[str]:
         webdav_url,
     ] + util.add_rclone_parameters(opts.webdav_params)
 
-    exit_code, stdout, stderr = util.run_rclone_command(parameters, verbose=True)
+    exit_code, stdout, stderr = util.run_rclone_command(parameters, verbose=False)
     util.check_stderr(exit_code, stderr)
     return stdout
 
@@ -46,11 +46,13 @@ def rclone_copyurl_to_webdav(opts: util.PluginInfoJson) -> list[str]:
 if __name__ == '__main__':
 
     try:
+        # read export data from stdin
+        export_json = json.loads(sys.stdin.read())
 
-        # read from %info.json% (needs to be given as the first argument)
+        # read %info.json% (needs to be given as the first argument)
         info_json = json.loads(sys.argv[1])
 
-        parsed_opts = util.PluginInfoJson('webdav', info_json)
+        parsed_opts = util.PluginInfoJson('webdav', info_json, export_json)
         export_response = parsed_opts.export
 
         # depending on the packer, decide which rclone method to use
@@ -66,14 +68,12 @@ if __name__ == '__main__':
             _ = rclone_copyurl_to_webdav(parsed_opts)
 
         else:
-            raise Exception('unknown packer {}'.format(parsed_opts.transport_packer))
+            raise Exception(f'unknown packer {parsed_opts.transport_packer}')
 
         export_response['_state'] = 'done'
         util.return_json_body(export_response)
 
     except util.CommandlineErrorException as e:
-        print((str(e)))
         util.return_error('rclone_error', str(e))
     except Exception as e:
-        print((str(e)))
         util.return_error('internal', str(e))

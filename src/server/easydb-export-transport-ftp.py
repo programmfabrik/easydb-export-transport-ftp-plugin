@@ -33,11 +33,12 @@ def transport_ftp(easydb_context, protocol=None):
 
     server = opts.get('server')
 
-    if 'packer' in transport and transport['packer'] is not None:
-        logger.debug('transport packer: {}'.format(transport['packer']))
+    packer = transport.get('packer')
+    if packer:
+        logger.debug(f'transport packer: {packer}')
 
         files_dir = exp.getFilesPath() + '/../tmp/'
-        logger.debug('transport files dir: {}'.format(files_dir))
+        logger.debug(f'transport files dir: {files_dir}')
 
         filelist = []
         filetype_blacklist = ['.xsl', '.xslt']
@@ -54,14 +55,14 @@ def transport_ftp(easydb_context, protocol=None):
                     filelist.append({'path': f})
                 break
         except Exception as e:
-            logger.debug('could not get transport files list: {}'.format(str(e)))
+            logger.debug(f'could not get transport files list: {e}')
 
-        logger.debug('transport files list: {}'.format(json.dumps(filelist, indent=4)))
+        logger.debug(f'transport files list: {json.dumps(filelist, indent=4)}')
     else:
         files_dir = exp.getFilesPath()
-        logger.debug('transport files dir: {}'.format(files_dir))
+        logger.debug(f'transport files dir: {files_dir}')
         filelist = exp.getFiles()
-        logger.debug('transport files list: {}'.format(json.dumps(filelist, indent=4)))
+        logger.debug(f'transport files list: {json.dumps(filelist, indent=4)}')
 
     if server.startswith('ftp://') or server.startswith('ftps://'):
         FTP(

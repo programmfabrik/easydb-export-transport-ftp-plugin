@@ -31,9 +31,9 @@ class PluginInfoJson:
 
     additional_parameters: list
 
-    def __init__(self, target: str, info_json: dict) -> None:
+    def __init__(self, target: str, info_json: dict, stdin_json: dict) -> None:
         self.__target = target
-        self.__parse(info_json)
+        self.__parse(info_json, stdin_json)
 
     def format_export_http_url(self) -> str:
 
@@ -64,9 +64,9 @@ class PluginInfoJson:
         # - <url>/api/v1/export/1/uuid/12345674-890a-bcde-f123-4567890abcde/file/
         return f'{base_url}/{packer_sub_path}/'
 
-    def __parse(self, info_json: dict) -> None:
+    def __parse(self, info_json: dict, stdin_json: dict) -> None:
 
-        self.export = info_json.get('export', {})
+        self.export = stdin_json.get('export', {})
         if not self.export or self.export == {}:
             raise Exception('export not set')
 
@@ -106,18 +106,6 @@ class PluginInfoJson:
         while self.target_dir.endswith('/'):
             self.target_dir = self.target_dir[:-1]
 
-        __login = __transport_options.get('login')
-        if not __login:
-            raise Exception('transport options: ftp/webdav user not set')
-
-        __password = __transport_options.get('password')
-        if not __password:
-            # depending on the transport definition, the password might be marked as secure
-            __password = __transport_options.get('password:secret')
-        if not __password:
-            raise Exception('transport options: ftp/webdav password not set')
-        __obscure_pass = rclone_obscure_password(__password)
-
         # read and parse the url of the target server
         __url = __transport_options.get('server')
         if not __url:
@@ -130,20 +118,30 @@ class PluginInfoJson:
 
         if self.__target == 'ftp':
 
+            # login data
+            __user = __transport_options.get('login')
+            if not __user:
+                raise Exception('transport options: ftp login not set')
+            __pass = __transport_options.get('password')
+            if not __pass:
+                __pass = __transport_options.get('password:secret')
+            if not __pass:
+                raise Exception('transport options: ftp password not set')
+            __obscure_pass = rclone_obscure_password(__pass)
+
+            # different ftp protocols
             __ftp_protocol, __ftp_host, __ftp_port = parse_ftp_url(__url)
-
             if __ftp_protocol not in ['ftp', 'sftp', 'ftps']:
-                raise Exception('unknown remote protocol {}'.format(__ftp_protocol))
-
+                raise Exception(f'unknown remote protocol {__ftp_protocol}')
             if not __ftp_host or __ftp_port == 0:
-                raise Exception('invalid ftp url {0}'.format(__url))
+                raise Exception(f'invalid ftp url {__url}')
 
             # build rclone ftp parameter map
             if __ftp_protocol == 'sftp':
                 self.ftp_params = {
                     'sftp-host': __ftp_host,
                     'sftp-port': __ftp_port,
-                    'sftp-user': __login,
+                    'sftp-user': __user,
                     'sftp-pass': __obscure_pass,
                 }
                 self.rclone_ftp_method = 'sftp'
@@ -151,7 +149,7 @@ class PluginInfoJson:
                 self.ftp_params = {
                     'ftp-host': __ftp_host,
                     'ftp-port': __ftp_port,
-                    'ftp-user': __login,
+                    'ftp-user': __user,
                     'ftp-pass': __obscure_pass,
                 }
                 self.rclone_ftp_method = 'ftp'
@@ -166,14 +164,23 @@ class PluginInfoJson:
 
         elif self.__target == 'webdav':
 
+            # login data
+            __user = __transport_options.get('webdav_user')
+            if not __user:
+                raise Exception('transport options: webdav user not set')
+            __pass = __transport_options.get('webdav_pass')
+            if not __pass:
+                __pass = __transport_options.get('webdav_pass:secret')
+            if not __pass:
+                raise Exception('transport options: webdav pass not set')
+            __obscure_pass = rclone_obscure_password(__pass)
+
             # build rclone webdav parameter map
             self.webdav_params = {
                 'webdav-url': __url,
+                'webdav-user': __user,
+                'webdav-pass': __obscure_pass,
             }
-            if __login is not None:
-                self.webdav_params['webdav-user'] = __login
-            if __obscure_pass is not None:
-                self.webdav_params['webdav-pass'] = __obscure_pass
 
 
 # --------------------- helpers ---------------------
@@ -207,6 +214,8 @@ def run_command(
             stderr_response.append(str(process.stderr.readline().strip()))
 
         code = process.poll()
+        # must explicitly check for "not None"
+        # else loop gets stuck, 0 is a valid code
         if code is not None:
             exit_code = code
 
@@ -246,6 +255,9 @@ class CommandlineErrorException(Exception):
 
 
 def check_stderr(exit_code: int, stderr_lst: list):
+    if exit_code == 0:
+        return
+
     # ignore all empty lines from stderr
     stderr_strings = []
     for se in stderr_lst:
@@ -256,11 +268,8 @@ def check_stderr(exit_code: int, stderr_lst: list):
         stderr_strings.append(se_str)
         stderr(se_str)
 
-    if exit_code == 0:
-        return
-
     raise CommandlineErrorException(
-        'exit code: %d\n%s'.format(exit_code, '\n'.join(stderr_strings))
+        f'exit code: {exit_code}\n' + '\n'.join(stderr_strings)
     )
 
 

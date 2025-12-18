@@ -1,4 +1,4 @@
-# easydb-export-transport-ftp
+# easydb-export-transport-ftp-plugin
 
 Export plugin for **easydb5** and **fylr** which adds transports to FTP and WEBDAV.
 

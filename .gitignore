@@ -1,6 +1,7 @@
 *.coffee.js
 .sass-cache
 build
+build_fylr
 build-stamp-*
 build-info.json
 *~
