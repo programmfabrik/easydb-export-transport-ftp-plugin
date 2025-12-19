@@ -15,7 +15,7 @@ INSTALL_FILES = \
 	src/server/$(PLUGIN_NAME).py \
 	src/server/fylr-export-transport-ftp.py \
 	src/server/fylr-export-transport-webdav.py \
-	manifest.yml
+	manifest.master.yml
 
 COFFEE_FILES = 	src/webfrontend/ExportTransportFTP.coffee \
 				src/webfrontend/ExportTransportWebDAV.coffee
