@@ -40,6 +40,9 @@ class ExportTransportFTP extends ExportTransportPlugin
 			if opt.hint
 				formOpts.hint = $$("export.transport.ftp.option.hint."+opt.key)
 
+			if opt.key == "password" and ez5.version("6")
+				opt.key = "password:secret" # This is a special case for the password field.
+
 			fields.push
 				type: CUI.Input
 				name: opt.key
