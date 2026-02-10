@@ -40,7 +40,7 @@ class ExportTransportFTP extends ExportTransportPlugin
 			if opt.hint
 				formOpts.hint = $$("export.transport.ftp.option.hint."+opt.key)
 
-			if opt.key == "password" and ez5.version("6")
+			if opt.key == "password" and @supportSecretFields?()
 				opt.key = "password:secret" # This is a special case for the password field.
 
 			fields.push
