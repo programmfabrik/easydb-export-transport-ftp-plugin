@@ -5,6 +5,8 @@ L10N_FILES = l10n/$(PLUGIN_NAME).csv
 L10N_GOOGLE_KEY = 1Z3UPJ6XqLBp-P8SUf-ewq4osNJ3iZWKJB83tc6Wrfn0
 L10N_GOOGLE_GID = 1868686590
 
+BUILD_INFO = build-info.json
+
 INSTALL_FILES = \
 	$(WEB)/l10n/cultures.json \
 	$(WEB)/l10n/de-DE.json \
@@ -36,19 +38,19 @@ wipe: wipe-base
 test:
 	python3 src/server/ftp_test.py
 
-# all:
-
-# INSTALL_FILES = \
-# 	ftp.py \
-# 	plugin.json
-
-# install-server: ${INSTALL_FILES}
-# 	[ ! -z "${INSTALL_PREFIX}" ]
-# 	for f in ${INSTALL_FILES}; do \
-# 		mkdir -p ${INSTALL_PREFIX}/server/base/plugins/transport/ftp/`dirname $$f`; \
-# 		cp $$f ${INSTALL_PREFIX}/server/base/plugins/transport/ftp/$$f; \
-# 	done
-
+buildinfojson:
+	repo=`git remote get-url origin | sed -e 's/\.git$$//' -e 's#.*[/\\]##'` ;\
+	rev=`git show --no-patch --format=%H` ;\
+	lastchanged=`git show --no-patch --format=%ad --date=format:%Y-%m-%dT%T%z` ;\
+	builddate=`date +"%Y-%m-%dT%T%z"` ;\
+	release=$(if $(strip $(RELEASE_TAG)),'"$(RELEASE_TAG)"','null') ;\
+	echo '{' > ${BUILD_INFO} ;\
+	echo '  "repository": "'$$repo'",' >> ${BUILD_INFO} ;\
+	echo '  "rev": "'$$rev'",' >> ${BUILD_INFO} ;\
+	echo '  "release": '$$release',' >> ${BUILD_INFO} ;\
+	echo '  "lastchanged": "'$$lastchanged'",' >> ${BUILD_INFO} ;\
+	echo '  "builddate": "'$$builddate'"' >> ${BUILD_INFO} ;\
+	echo '}' >> ${BUILD_INFO}
 
 # ----------------------------
 # fylr only
