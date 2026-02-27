@@ -16,7 +16,7 @@ callbacks:
 
     transport_ftp:
       exec:
-        timeoutSec: 60
+        timeoutSec: 3600
         service: python3
         commands:
           - prog: python3
@@ -32,7 +32,7 @@ callbacks:
 
     transport_webdav:
       exec:
-        timeoutSec: 60
+        timeoutSec: 3600
         service: python3
         commands:
           - prog: python3
