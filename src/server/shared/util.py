@@ -258,10 +258,10 @@ def format_export_response(
     resp['_transport_log'] = ['start rclone...'] + rclone_stdout + rclone_stderr
 
     if exit_code == 0:
-        resp['_transport_state'] = 'done'
+        resp['_state'] = 'done'
         resp['_transport_log'].append('rclone finished successfully')
     else:
-        resp['_transport_state'] = 'failed'
+        resp['_state'] = 'failed'
         resp['_transport_log'].append(f'rclone failed with exit code {exit_code}')
 
     return resp
