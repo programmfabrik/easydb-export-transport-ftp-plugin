@@ -24,11 +24,12 @@ def rclone_sync_to_ftp(
         ftp_url,
     ] + util.add_rclone_parameters(
         parameter_map,
-        opts.rclone_log_level,
         opts.additional_parameters,
     )
 
-    return util.run_rclone_command(parameters)
+    return util.run_rclone_command(
+        parameters, util.rclone_log_level(opts.rclone_log_debug)
+    )
 
 
 def rclone_copyurl_to_ftp(
@@ -45,11 +46,13 @@ def rclone_copyurl_to_ftp(
         ftp_url,
     ] + util.add_rclone_parameters(
         opts.ftp_params,
-        opts.rclone_log_level,
         opts.additional_parameters,
     )
 
-    return util.run_rclone_command(parameters)
+    return util.run_rclone_command(
+        parameters,
+        util.rclone_log_level(opts.rclone_log_debug),
+    )
 
 
 if __name__ == '__main__':

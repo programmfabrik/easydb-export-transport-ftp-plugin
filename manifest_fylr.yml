@@ -14,15 +14,9 @@ base_config:
   - name: rclone
     group: export
     parameters:
-      log_level:
-        type: select
-        label: rclone_log_level
-        default: INFO
-        options:
-          - DEBUG
-          - INFO
-          - NOTICE
-          - ERROR
+      rclone_log_debug:
+        type: bool
+        default: false
         position: 0
 
 callbacks:

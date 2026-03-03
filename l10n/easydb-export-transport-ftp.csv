@@ -1,7 +1,7 @@
 key,de-DE,R,en-US,R,da-DK,R,fi-FI,R,sv-SE,R,fr-FR,R,it-IT,R,es-ES,R
+server.config.name.system.easydb-export-transport-ftp-plugin.title,Export Transport Plugin: FTP / WebDAV,FALSE,Export Transport Plugin: FTP / WebDAV,FALSE,,TRUE,,TRUE,,TRUE,,TRUE,,FALSE,,FALSE
 export.transport.ftp.option.directory,Verzeichnis,FALSE,Directory,FALSE,Directory,FALSE,Hakemisto,FALSE,Sökväg,FALSE,Annuaire,FALSE,,FALSE,,FALSE
-export.transport.ftp.option.hint.directory,Zum Beispiel: /data (optional),FALSE,For example: /data (optional),FALSE,For example: /data (optional),FALSE,Esimerkiksi: /data (valinnainen),FALSE,"Till exempel: /data
-(valfritt)",FALSE,Par exemple : /data (optionnel),FALSE,,FALSE,,FALSE
+export.transport.ftp.option.hint.directory,Zum Beispiel: /data (optional),FALSE,For example: /data (optional),FALSE,For example: /data (optional),FALSE,Esimerkiksi: /data (valinnainen),FALSE,Till exempel: /data (valfritt),FALSE,Par exemple : /data (optionnel),FALSE,,FALSE,,FALSE
 export.transport.ftp.option.hint.server,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,"[​ftp://example.com](), [sftp://example.com](), [ftps://example.com]()",FALSE,,FALSE,,FALSE
 export.transport.ftp.option.login,Login,FALSE,Login,FALSE,Login,FALSE,Käyttäjätunnus,FALSE,Användarnamn,FALSE,Connexion,FALSE,,FALSE,,FALSE
 export.transport.ftp.option.packer,Komprimierung,FALSE,Compression,FALSE,Compression,FALSE,Pakkaus,FALSE,Kompression,FALSE,Compression,FALSE,,FALSE,,FALSE
@@ -13,8 +13,7 @@ export.transport.packer.folder,Keine (ganzes Export-Verzeichnis kopieren),FALSE,
 export.transport.packer.tar.gz,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,tar.gz,FALSE,,FALSE,,FALSE
 export.transport.packer.zip,zip,FALSE,zip,FALSE,zip,FALSE,zip,FALSE,zip,FALSE,zip,FALSE,,FALSE,,FALSE
 export.transport.webdav.option.directory,Verzeichnis,FALSE,Directory,FALSE,Directory,FALSE,Hakemisto,FALSE,Sökväg,FALSE,Annuaire,FALSE,,FALSE,,FALSE
-export.transport.webdav.option.hint.directory,Zum Beispiel: /data (optional),FALSE,For example: /data (optional),FALSE,For example: /data (optional),FALSE,Esimerkiksi: /data (valinnainen),FALSE,"Till exempel: /data
-(valfritt)",FALSE,Par exemple : /data (optionnel),FALSE,,FALSE,,FALSE
+export.transport.webdav.option.hint.directory,Zum Beispiel: /data (optional),FALSE,For example: /data (optional),FALSE,For example: /data (optional),FALSE,Esimerkiksi: /data (valinnainen),FALSE,Till exempel: /data (valfritt),FALSE,Par exemple : /data (optionnel),FALSE,,FALSE,,FALSE
 export.transport.webdav.option.hint.login,optional,FALSE,optional,FALSE,optional,FALSE,valinnainen,FALSE,valfritt,FALSE,facultatif,FALSE,,FALSE,,FALSE
 export.transport.webdav.option.hint.password,optional,FALSE,optional,FALSE,optional,FALSE,valinnainen,FALSE,valfritt,FALSE,facultatif,FALSE,,FALSE,,FALSE
 export.transport.webdav.option.hint.server,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,"[http://example.com](), [https://example.com]()",FALSE,,FALSE,,FALSE
@@ -24,4 +23,9 @@ export.transport.webdav.option.password,Passwort,FALSE,Password,FALSE,Password,F
 export.transport.webdav.option.server,Server,FALSE,Server,FALSE,Server,FALSE,Palvelin,FALSE,Server,FALSE,Serveur,FALSE,,FALSE,,FALSE
 export.transport.webdav.type|icon,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,fa-caret-square-o-right,FALSE,,FALSE,,FALSE
 export.transport.webdav.type|text,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,WebDAV,FALSE,,FALSE,,FALSE
-export.manager.list.transport.node.type.easydb-export-transport-ftp-plugin:transport_ftp,FTP,FALSE,FTP,FALSE,,FALSE,,FALSE,,FALSE,FTP,FALSE,,FALSE,,FALSE
+export.manager.list.transport.node.type.easydb-export-transport-ftp-plugin:transport_ftp,FTP,FALSE,FTP,FALSE,,TRUE,,TRUE,,TRUE,FTP,FALSE,,TRUE,,FALSE
+server.config.name.system.rclone,Einstellungen für rclone,FALSE,rclone Settings,FALSE,,TRUE,,TRUE,,TRUE,,TRUE,,TRUE,,FALSE
+server.config.name.system.rclone|hint,Plugin benutzt `rclone` für das Kopieren von Dateien,FALSE,Plugin uses `rclone` to copy files,FALSE,,TRUE,,TRUE,,TRUE,,TRUE,,TRUE,,FALSE
+server.config.parameter.system.rclone.rclone_log_debug.label,Log Level,FALSE,Log Level,FALSE,,TRUE,,TRUE,,TRUE,,TRUE,,TRUE,,FALSE
+server.config.parameter.system.rclone.rclone_log_debug.label|hint,Achtung: bei großer Anzahl von Dateien kann das Transport Log sehr groß werden!,FALSE,Attention: for a large number of files the transport log can get very big!,FALSE,,TRUE,,TRUE,,TRUE,,TRUE,,TRUE,,FALSE
+server.config.parameter.system.rclone.rclone_log_debug.checkbox,"Log Level ""DEBUG"" aktivieren",FALSE,"Enable log level ""DEBUG""",FALSE,,TRUE,,TRUE,,TRUE,,TRUE,,TRUE,,FALSE

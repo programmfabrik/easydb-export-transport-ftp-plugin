@@ -9,7 +9,6 @@ import fylr_lib_plugin_python3.util as fylr_util
 
 def rclone_sync_to_webdav(
     opts: util.PluginInfoJson,
-    verbose: bool,
 ) -> tuple[int, list[str], list[str]]:
     parameter_map = opts.webdav_params.copy()
     parameter_map['http-url'] = opts.format_export_http_url()
@@ -21,17 +20,16 @@ def rclone_sync_to_webdav(
             '/{0}'.format(opts.target_dir) if len(opts.target_dir) > 0 else '',
             opts.export_name,
         ),
-    ] + util.add_rclone_parameters(
-        parameter_map,
-        opts.rclone_log_level,
-    )
+    ] + util.add_rclone_parameters(parameter_map)
 
-    return util.run_rclone_command(parameters)
+    return util.run_rclone_command(
+        parameters,
+        util.rclone_log_level(opts.rclone_log_debug),
+    )
 
 
 def rclone_copyurl_to_webdav(
     opts: util.PluginInfoJson,
-    verbose: bool,
 ) -> tuple[int, list[str], list[str]]:
     http_url = opts.format_export_http_url()
     webdav_url = ':webdav:/{0}/{1}.{2}'.format(
@@ -44,12 +42,12 @@ def rclone_copyurl_to_webdav(
         'copyurl',
         http_url,
         webdav_url,
-    ] + util.add_rclone_parameters(
-        opts.webdav_params,
-        opts.rclone_log_level,
-    )
+    ] + util.add_rclone_parameters(opts.webdav_params)
 
-    return util.run_rclone_command(parameters)
+    return util.run_rclone_command(
+        parameters,
+        util.rclone_log_level(opts.rclone_log_debug),
+    )
 
 
 if __name__ == '__main__':
@@ -70,16 +68,12 @@ if __name__ == '__main__':
             or parsed_opts.transport_packer == 'folder'
         ):
             # sync all exported files and folders from the export with the webdav target directory
-            exit_code, rclone_stdout, rclone_stderr = rclone_sync_to_webdav(
-                parsed_opts,
-                verbose=True,
-            )
+            exit_code, rclone_stdout, rclone_stderr = rclone_sync_to_webdav(parsed_opts)
 
         elif parsed_opts.transport_packer in ['zip', 'tar.gz']:
             # copy the exported archive files from the export to the webdav target directory
             exit_code, rclone_stdout, rclone_stderr = rclone_copyurl_to_webdav(
-                parsed_opts,
-                verbose=True,
+                parsed_opts
             )
 
         else:
