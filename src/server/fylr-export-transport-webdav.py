@@ -4,6 +4,7 @@
 import sys
 import json
 from shared import util
+import fylr_lib_plugin_python3.util as fylr_util
 
 
 def rclone_sync_to_webdav(
@@ -20,9 +21,12 @@ def rclone_sync_to_webdav(
             '/{0}'.format(opts.target_dir) if len(opts.target_dir) > 0 else '',
             opts.export_name,
         ),
-    ] + util.add_rclone_parameters(parameter_map)
+    ] + util.add_rclone_parameters(
+        parameter_map,
+        opts.rclone_log_level,
+    )
 
-    return util.run_rclone_command(parameters, verbose)
+    return util.run_rclone_command(parameters)
 
 
 def rclone_copyurl_to_webdav(
@@ -40,9 +44,12 @@ def rclone_copyurl_to_webdav(
         'copyurl',
         http_url,
         webdav_url,
-    ] + util.add_rclone_parameters(opts.webdav_params)
+    ] + util.add_rclone_parameters(
+        opts.webdav_params,
+        opts.rclone_log_level,
+    )
 
-    return util.run_rclone_command(parameters, verbose)
+    return util.run_rclone_command(parameters)
 
 
 if __name__ == '__main__':
@@ -88,4 +95,9 @@ if __name__ == '__main__':
         )
 
     except Exception as e:
-        util.return_error('internal', str(e))
+        util.return_json_body(
+            {
+                '_state': 'failed',
+                '_transport_log': fylr_util.get_exception_traceback(e),
+            }
+        )

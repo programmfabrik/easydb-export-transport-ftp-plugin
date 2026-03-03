@@ -10,3 +10,18 @@ plugin:
 
 python-2:
   file: src/server/easydb-export-transport-ftp.py
+
+base_config:
+  - name: rclone
+    group: export
+    parameters:
+      log_level:
+        type: select
+        label: rclone_log_level
+        default: INFO
+        options:
+          - DEBUG
+          - INFO
+          - NOTICE
+          - ERROR
+        position: 0

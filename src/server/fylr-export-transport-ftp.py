@@ -4,11 +4,11 @@
 import sys
 import json
 from shared import util
+import fylr_lib_plugin_python3.util as fylr_util
 
 
 def rclone_sync_to_ftp(
     opts: util.PluginInfoJson,
-    verbose: bool,
 ) -> tuple[int, list[str], list[str]]:
 
     http_url = opts.format_export_http_url()
@@ -24,15 +24,15 @@ def rclone_sync_to_ftp(
         ftp_url,
     ] + util.add_rclone_parameters(
         parameter_map,
+        opts.rclone_log_level,
         opts.additional_parameters,
     )
 
-    return util.run_rclone_command(parameters, verbose)
+    return util.run_rclone_command(parameters)
 
 
 def rclone_copyurl_to_ftp(
     opts: util.PluginInfoJson,
-    verbose: bool,
 ) -> tuple[int, list[str], list[str]]:
 
     http_url = opts.format_export_http_url()
@@ -45,10 +45,11 @@ def rclone_copyurl_to_ftp(
         ftp_url,
     ] + util.add_rclone_parameters(
         opts.ftp_params,
+        opts.rclone_log_level,
         opts.additional_parameters,
     )
 
-    return util.run_rclone_command(parameters, verbose)
+    return util.run_rclone_command(parameters)
 
 
 if __name__ == '__main__':
@@ -67,17 +68,11 @@ if __name__ == '__main__':
         # depending on the packer, decide which rclone method to use
         if not parsed_opts.transport_packer or parsed_opts.transport_packer == 'folder':
             # sync all exported files and folders from the export with the ftp target directory
-            exit_code, rclone_stdout, rclone_stderr = rclone_sync_to_ftp(
-                parsed_opts,
-                verbose=True,
-            )
+            exit_code, rclone_stdout, rclone_stderr = rclone_sync_to_ftp(parsed_opts)
 
         elif parsed_opts.transport_packer in ['zip', 'tar.gz']:
             # copy the exported archive files from the export to the ftp target directory
-            exit_code, rclone_stdout, rclone_stderr = rclone_copyurl_to_ftp(
-                parsed_opts,
-                verbose=True,
-            )
+            exit_code, rclone_stdout, rclone_stderr = rclone_copyurl_to_ftp(parsed_opts)
 
         else:
             raise Exception(f'unknown packer {parsed_opts.transport_packer}')
@@ -92,4 +87,9 @@ if __name__ == '__main__':
         )
 
     except Exception as e:
-        util.return_error('internal', str(e))
+        util.return_json_body(
+            {
+                '_state': 'failed',
+                '_transport_log': fylr_util.get_exception_traceback(e),
+            }
+        )

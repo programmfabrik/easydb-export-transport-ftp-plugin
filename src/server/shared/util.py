@@ -24,6 +24,7 @@ class PluginInfoJson:
 
     ftp_params: dict
     rclone_ftp_method: str
+    rclone_log_level: str
 
     webdav_params: dict
 
@@ -71,6 +72,18 @@ class PluginInfoJson:
         self.api_url = info_json.get('api_callback', {}).get('url')
         if not self.api_url:
             raise Exception('callback url not set')
+
+        # read from base config
+        # info.config.plugin["easydb-export-transport-ftp-plugin"].config.rclone.log_level
+        __plugin_config = (
+            info_json.get('info', {})
+            .get('plugin', {})
+            .get('easydb-export-transport-ftp-plugin', {})
+            .get('config', {})
+        )
+        self.rclone_log_level = __plugin_config.get('rclone', {}).get(
+            'log_level', 'INFO'
+        )
 
         # read from export definition
         __export_def = self.export.get('export')
@@ -312,16 +325,7 @@ def parse_ftp_url(url: str) -> tuple[str, str, int]:
 # --------------------- rclone specific functions --------------------
 
 
-def run_rclone_command(
-    parameters: list[str],
-    verbose: bool,
-    output_only: bool = False,  # used for commands which need the output of rclone without any debug output, notices etc
-) -> tuple[int, list[str], list[str]]:
-
-    if verbose:
-        parameters.append('--log-level=DEBUG')
-    if output_only:
-        parameters.append('--log-level=ERROR')
+def run_rclone_command(parameters: list[str]) -> tuple[int, list[str], list[str]]:
 
     result = subprocess.run(
         ['rclone'] + parameters,
@@ -338,10 +342,13 @@ def run_rclone_command(
 
 def add_rclone_parameters(
     parameter_map: dict,
+    log_level: str,
     additional_parameters: list[str] = [],
 ) -> list[str]:
     parameters = [f'--{p}={parameter_map[p]}' for p in parameter_map]
     parameters += [f'--{p}' for p in additional_parameters]
+    if log_level:
+        parameters += [f'--log-level={log_level}']
     return parameters
 
 
@@ -376,9 +383,14 @@ def clean_rclone_output(output: str) -> list[str]:
 
 def rclone_obscure_password(pw_cleartext: str) -> str:
     exit_code, stdout, stderr = run_rclone_command(
-        ['obscure', pw_cleartext],
-        verbose=False,
-        output_only=True,
+        [
+            'obscure',
+            pw_cleartext,
+        ]
+        + add_rclone_parameters(
+            {},
+            log_level='ERROR',  # suppress any output, except for the actual obscured password
+        )
     )
     if exit_code != 0:
         return ''
