@@ -10,13 +10,22 @@ plugin:
 
 base_url_prefix: webfrontend
 
+base_config:
+  - name: rclone
+    group: export
+    parameters:
+      rclone_log_debug:
+        type: bool
+        default: false
+        position: 0
+
 callbacks:
 
   export_transport:
 
     transport_ftp:
       exec:
-        timeoutSec: 60
+        timeoutSec: 3600
         service: python3
         commands:
           - prog: python3
@@ -32,7 +41,7 @@ callbacks:
 
     transport_webdav:
       exec:
-        timeoutSec: 60
+        timeoutSec: 3600
         service: python3
         commands:
           - prog: python3

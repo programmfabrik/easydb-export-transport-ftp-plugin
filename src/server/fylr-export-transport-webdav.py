@@ -4,9 +4,12 @@
 import sys
 import json
 from shared import util
+import fylr_lib_plugin_python3.util as fylr_util
 
 
-def rclone_sync_to_webdav(opts: util.PluginInfoJson) -> list[str]:
+def rclone_sync_to_webdav(
+    opts: util.PluginInfoJson,
+) -> tuple[int, list[str], list[str]]:
     parameter_map = opts.webdav_params.copy()
     parameter_map['http-url'] = opts.format_export_http_url()
 
@@ -19,12 +22,15 @@ def rclone_sync_to_webdav(opts: util.PluginInfoJson) -> list[str]:
         ),
     ] + util.add_rclone_parameters(parameter_map)
 
-    exit_code, stdout, stderr = util.run_rclone_command(parameters, verbose=False)
-    util.check_stderr(exit_code, stderr)
-    return stdout
+    return util.run_rclone_command(
+        parameters,
+        util.rclone_log_level(opts.rclone_log_debug),
+    )
 
 
-def rclone_copyurl_to_webdav(opts: util.PluginInfoJson) -> list[str]:
+def rclone_copyurl_to_webdav(
+    opts: util.PluginInfoJson,
+) -> tuple[int, list[str], list[str]]:
     http_url = opts.format_export_http_url()
     webdav_url = ':webdav:/{0}/{1}.{2}'.format(
         '/{0}'.format(opts.target_dir) if len(opts.target_dir) > 0 else '',
@@ -38,21 +44,22 @@ def rclone_copyurl_to_webdav(opts: util.PluginInfoJson) -> list[str]:
         webdav_url,
     ] + util.add_rclone_parameters(opts.webdav_params)
 
-    exit_code, stdout, stderr = util.run_rclone_command(parameters, verbose=False)
-    util.check_stderr(exit_code, stderr)
-    return stdout
+    return util.run_rclone_command(
+        parameters,
+        util.rclone_log_level(opts.rclone_log_debug),
+    )
 
 
 if __name__ == '__main__':
 
     try:
         # read export data from stdin
-        export_json = json.loads(sys.stdin.read())
+        stdin_json = util.read_json_from_stdin()
 
         # read %info.json% (needs to be given as the first argument)
         info_json = json.loads(sys.argv[1])
 
-        parsed_opts = util.PluginInfoJson('webdav', info_json, export_json)
+        parsed_opts = util.PluginInfoJson('webdav', info_json, stdin_json)
         export_response = parsed_opts.export
 
         # depending on the packer, decide which rclone method to use
@@ -61,19 +68,30 @@ if __name__ == '__main__':
             or parsed_opts.transport_packer == 'folder'
         ):
             # sync all exported files and folders from the export with the webdav target directory
-            _ = rclone_sync_to_webdav(parsed_opts)
+            exit_code, rclone_stdout, rclone_stderr = rclone_sync_to_webdav(parsed_opts)
 
         elif parsed_opts.transport_packer in ['zip', 'tar.gz']:
             # copy the exported archive files from the export to the webdav target directory
-            _ = rclone_copyurl_to_webdav(parsed_opts)
+            exit_code, rclone_stdout, rclone_stderr = rclone_copyurl_to_webdav(
+                parsed_opts
+            )
 
         else:
             raise Exception(f'unknown packer {parsed_opts.transport_packer}')
 
-        export_response['_state'] = 'done'
-        util.return_json_body(export_response)
+        util.return_json_body(
+            util.format_export_response(
+                export_response,
+                exit_code,
+                rclone_stdout,
+                rclone_stderr,
+            )
+        )
 
-    except util.CommandlineErrorException as e:
-        util.return_error('rclone_error', str(e))
     except Exception as e:
-        util.return_error('internal', str(e))
+        util.return_json_body(
+            {
+                '_state': 'failed',
+                '_transport_log': fylr_util.get_exception_traceback(e),
+            }
+        )

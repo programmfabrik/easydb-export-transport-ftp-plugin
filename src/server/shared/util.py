@@ -6,8 +6,6 @@ import json
 import subprocess
 import re
 
-# --------------------- fylr specific utils ---------------------
-
 
 class PluginInfoJson:
 
@@ -26,6 +24,7 @@ class PluginInfoJson:
 
     ftp_params: dict
     rclone_ftp_method: str
+    rclone_log_debug: bool
 
     webdav_params: dict
 
@@ -73,6 +72,18 @@ class PluginInfoJson:
         self.api_url = info_json.get('api_callback', {}).get('url')
         if not self.api_url:
             raise Exception('callback url not set')
+
+        # read from plugin config
+        __plugin_config = (
+            info_json.get('info', {})
+            .get('config', {})
+            .get('plugin', {})
+            .get('easydb-export-transport-ftp-plugin', {})
+            .get('config', {})
+        )
+        self.rclone_log_debug = __plugin_config.get('rclone', {}).get(
+            'rclone_log_debug', False
+        )
 
         # read from export definition
         __export_def = self.export.get('export')
@@ -186,56 +197,6 @@ class PluginInfoJson:
 # --------------------- helpers ---------------------
 
 
-def run_command(
-    command: str,
-    parameters: list,
-    verbose: bool = False,
-) -> tuple[int, list[str], list[str]]:
-    stdout_response: list[str] = []
-    stderr_response: list[str] = []
-    exit_code: int = 0
-
-    if verbose:
-        stderr_response.append(f'> {command} {" ".join(parameters)}')
-
-    process = subprocess.Popen(
-        [command] + parameters,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-
-    if not process:
-        return exit_code, stdout_response, stderr_response
-
-    while True:
-        if process.stdout:
-            stdout_response.append(str(process.stdout.readline().strip()))
-        if process.stderr:
-            stderr_response.append(str(process.stderr.readline().strip()))
-
-        code = process.poll()
-        # must explicitly check for "not None"
-        # else loop gets stuck, 0 is a valid code
-        if code is not None:
-            exit_code = code
-
-            if process.stdout:
-                for output in process.stdout.readlines():
-                    stdout_response.append(str(output))
-            if process.stderr:
-                for output in process.stderr.readlines():
-                    stderr_response.append(str(output))
-
-            break
-
-    # multiply return code by -1 to get actual returncode
-    # from docu: "A negative value -N indicates that the child was terminated by signal N (POSIX only)."
-    if exit_code != None and exit_code < 0:
-        exit_code *= -1
-
-    return exit_code, stdout_response, stderr_response
-
-
 def create_missing_dirs(dir_path: str):
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
@@ -245,51 +206,44 @@ def create_missing_dirs_from_filepath(f_path: str):
     create_missing_dirs('/'.join(f_path.split('/')[:-1]))
 
 
-class CommandlineErrorException(Exception):
-
-    def __init__(self, msg: str):
-        self.__msg = msg
-
-    def __str__(self):
-        return 'command line returned an error:\n' + self.__msg
+def read_from_stdin() -> str:
+    s = sys.stdin.read()
+    sys.stdin.close()
+    return s
 
 
-def check_stderr(exit_code: int, stderr_lst: list):
-    if exit_code == 0:
-        return
-
-    # ignore all empty lines from stderr
-    stderr_strings = []
-    for se in stderr_lst:
-        se_str = se.strip()
-        if not se_str:
-            continue
-
-        stderr_strings.append(se_str)
-        stderr(se_str)
-
-    raise CommandlineErrorException(
-        f'exit code: {exit_code}\n' + '\n'.join(stderr_strings)
-    )
+def read_json_from_stdin() -> dict:
+    js = json.loads(sys.stdin.read())
+    sys.stdin.close()
+    return js
 
 
-def stdout(line: str):
+def write_to_stdout(line: str):
+    """
+    write line to stdout
+    """
     sys.stdout.write(line)
     sys.stdout.write('\n')
 
 
-def stderr(line: str):
+def write_to_stderr(line: str):
+    """
+    write line to stderr
+    """
     sys.stderr.write(line)
     sys.stderr.write('\n')
 
 
-def fatal(line: str):
-    stderr(line)
+def write_to_stderr_fatal(line: str):
+    """
+    write line to stderr and exit with an error code
+    """
+    write_to_stderr(line)
     exit(1)
 
 
 def return_error(realm: str, msg: str):
-    fatal(
+    write_to_stderr_fatal(
         json.dumps(
             {
                 'type': realm,
@@ -301,7 +255,32 @@ def return_error(realm: str, msg: str):
 
 
 def return_json_body(msg: dict):
-    stdout(json.dumps(msg, indent=4))
+    """
+    after this output the program must exit, so the json is valid
+    """
+    write_to_stdout(json.dumps(msg, indent=4))
+    exit(0)
+
+
+def format_export_response(
+    resp: dict,
+    exit_code: int,
+    rclone_stdout: list[str],
+    rclone_stderr: list[str],
+) -> dict:
+    resp['_transport_log'] = ['start rclone...'] + rclone_stdout + rclone_stderr
+
+    if exit_code == 0:
+        resp['_state'] = 'done'
+        resp['_transport_log'].append('rclone finished successfully')
+    else:
+        resp['_state'] = 'failed'
+        resp['_transport_log'].append(f'rclone failed with exit code {exit_code}')
+
+    return resp
+
+
+FTP_URL_REGEX = r'^((?P<scheme>.+):\/\/){0,1}(?P<host>[^:\/]+)(:(?P<port>\d+)){0,1}\/*$'
 
 
 def parse_ftp_url(url: str) -> tuple[str, str, int]:
@@ -309,10 +288,7 @@ def parse_ftp_url(url: str) -> tuple[str, str, int]:
     host = ''
     port = 0
 
-    match = re.match(
-        r'^((?P<scheme>.+):\/\/){0,1}(?P<host>[^:\/]+)(:(?P<port>\d+)){0,1}\/*$',
-        url,
-    )
+    match = re.match(FTP_URL_REGEX, url)
     if not match:
         return scheme, host, port
 
@@ -348,18 +324,51 @@ def parse_ftp_url(url: str) -> tuple[str, str, int]:
 
 # --------------------- rclone specific functions --------------------
 
+# https://rclone.org/docs/#log-level-loglevel
+
+# is equivalent to -vv. It outputs lots of debug info - useful for bug reports and really finding out what rclone is doing.
+RCLONE_LOG_DEBUG = 'DEBUG'
+
+# is equivalent to -v. It outputs information about each transfer and prints stats once a minute by default.
+RCLONE_LOG_INFO = 'INFO'
+
+# is the default log level if no logging flags are supplied. It outputs very little when things are working normally. It outputs warnings and significant events.
+RCLONE_LOG_NOTICE = 'NOTICE'
+
+# is equivalent to -q. It only outputs error messages.
+RCLONE_LOG_ERROR = 'ERROR'
+
+
+def rclone_log_level(log_debug: bool) -> str:
+    """
+    return DEBUG or best default
+    """
+    if log_debug:
+        return RCLONE_LOG_DEBUG
+
+    return RCLONE_LOG_INFO
+
 
 def run_rclone_command(
     parameters: list[str],
-    verbose: bool = False,
+    log_level: str,
 ) -> tuple[int, list[str], list[str]]:
-    # log level needs to be set to ERROR
-    # otherwise the NOTICE about the missing rclone config file would be written to stderr
-    # and the plugin would raise an exception even if the transport was successful
-    return run_command(
-        'rclone',
-        parameters + ['--log-level=ERROR'],
-        verbose,
+
+    if log_level:
+        # set specific log level for rclone
+        parameters += [f'--log-level={log_level}']
+
+    result = subprocess.run(
+        ['rclone'] + parameters,
+        capture_output=True,
+        text=True,
+    )
+
+    hide_info_bloat = log_level == RCLONE_LOG_INFO
+    return (
+        result.returncode,
+        clean_rclone_output(result.stdout, hide_info_bloat),
+        clean_rclone_output(result.stderr, hide_info_bloat),
     )
 
 
@@ -372,9 +381,55 @@ def add_rclone_parameters(
     return parameters
 
 
+HIDE_PASS_REGEX = r'(--(sftp|ftp|webdav)-pass\s*=\s*[^"\s]+)'
+HIDE_INFO_COPIED_REGEX = r'^.+ INFO\s*: .+ Copied .+$'
+
+
+def clean_rclone_output(output: str, hide_info_bloat: bool = False) -> list[str]:
+    """
+    - split lines in stdout, stderr output
+    - discard empty lines
+    - optionally: filter out repeated bloating info like "INFO : [...] Copied [...]" etc,
+        which would cause large logs for many files
+    - hide sensitive information like ftp-pass etc
+    """
+    lines = []
+    for line in output.split('\n'):
+        line = line.strip()
+        if not line:
+            continue
+
+        # check if the line contains any of the the info which should be excluded from the transport log
+        # if it matches, then skip the complete line
+        if hide_info_bloat and re.match(HIDE_INFO_COPIED_REGEX, line):
+            continue
+
+        # check if the line contains password information
+        # if it matches, then censor the sensible info
+        match = re.findall(HIDE_PASS_REGEX, line)
+        if not match:
+            lines.append(line)
+            continue
+
+        # replace e.g. --ftp-pass=0987654321 with --ftp-pass=***
+        # so that the password does not appear in events etc
+        for m in match:
+            line = line.replace(m[0], f'--{m[1]}-pass=***')
+
+        lines.append(line)
+    return lines
+
+
 def rclone_obscure_password(pw_cleartext: str) -> str:
-    exit_code, stdout, stderr = run_rclone_command(['obscure', pw_cleartext])
-    check_stderr(exit_code, stderr)
+    exit_code, stdout, stderr = run_rclone_command(
+        [
+            'obscure',
+            pw_cleartext,
+        ],
+        log_level=RCLONE_LOG_ERROR,  # suppress any output, except for the actual obscured password
+    )
+    if exit_code != 0:
+        return ''
 
     obscure_password = str(stdout[0])
     if obscure_password.startswith('b\'') and obscure_password.endswith('\''):

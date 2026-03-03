@@ -10,3 +10,4 @@ commit.txt
 *.pyc
 files/
 *.sh
+*.log
