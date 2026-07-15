@@ -1,5 +1,10 @@
 plugin:
   name: easydb-export-transport-ftp-plugin
+  info:
+    de-DE: |
+      Ein Export-Plugin für [easydb5](https://docs.easydb.de) und [fylr](https://documentation.fylr.cloud/docs), das die Auslieferung von Exportergebnissen per FTP und WebDAV ergänzt. Sinnvoll, wenn Exporte automatisch an ein externes FTP- oder WebDAV-Ziel übertragen statt manuell heruntergeladen werden sollen.
+    en-US: |
+      An export plugin for [easydb5](https://docs.easydb.de) and [fylr](https://documentation.fylr.cloud/docs) that adds delivery of export results over FTP and WebDAV. Use it when exports should be pushed automatically to an external FTP or WebDAV target instead of being downloaded manually.
   version: 1.0
   server:
     api-version:
